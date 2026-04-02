@@ -3,11 +3,28 @@ import { renderSSR } from "./ssr/renderer.tsx";
 import db from "./db";
 import { postsRoutes } from "./routes/posts";
 import { authRoutes } from "./routes/auth";
+import { seedDatabase } from "./db/seed";
+
+seedDatabase();
 
 const app = new Elysia()
   .decorate("db", db)
   .use(postsRoutes)
   .use(authRoutes)
+  .get("/public/*", async ({ params }) => {
+    const file = Bun.file(`./public/${params["*"]}`);
+    if (await file.exists()) {
+      return new Response(file);
+    }
+    return new Response("Not found", { status: 404 });
+  })
+  .get("/frontend/*", async ({ params }) => {
+    const file = Bun.file(`./frontend/${params["*"]}`);
+    if (await file.exists()) {
+      return new Response(file);
+    }
+    return new Response("Not found", { status: 404 });
+  })
   .get("*", async ({ request }) => {
     return renderSSR(request);
   })
