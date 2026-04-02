@@ -14,16 +14,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('auth_token')
-  })
+  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const savedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+    if (savedToken) {
+      setToken(savedToken)
+    } else {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (token) {
       fetchCurrentUser()
-    } else {
-      setLoading(false)
     }
   }, [token])
 
