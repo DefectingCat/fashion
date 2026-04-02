@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import type { Post } from "../../../src/types";
 
 export default function PostDetail() {
+  const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const pathParts = window.location.pathname.split("/");
-    const slug = pathParts[pathParts.length - 1];
-
-    if (!slug) {
-      setError("文章不存在");
-      setLoading(false);
-      return;
-    }
+    if (!slug) return;
 
     fetch("/api/posts")
       .then((res) => res.json())
@@ -32,17 +27,13 @@ export default function PostDetail() {
         setError("加载文章失败");
         setLoading(false);
       });
-  }, []);
+  }, [slug]);
 
   const renderMarkdown = (content: string) => {
     if (typeof window !== "undefined" && (window as any).marked) {
       return { __html: (window as any).marked.parse(content) };
     }
     return { __html: content.replace(/\n/g, "<br>") };
-  };
-
-  const goHome = () => {
-    window.location.href = "/";
   };
 
   if (loading) {
@@ -58,12 +49,9 @@ export default function PostDetail() {
       <div className="min-h-screen bg-gray-50">
         <header className="bg-white shadow-sm">
           <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-            <button
-              onClick={goHome}
-              className="text-blue-600 hover:text-blue-800"
-            >
+            <Link to="/" className="text-blue-600 hover:text-blue-800">
               ← 返回首页
-            </button>
+            </Link>
           </div>
         </header>
         <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -80,12 +68,9 @@ export default function PostDetail() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <button
-            onClick={goHome}
-            className="text-blue-600 hover:text-blue-800"
-          >
+          <Link to="/" className="text-blue-600 hover:text-blue-800">
             ← 返回首页
-          </button>
+          </Link>
         </div>
       </header>
       <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -111,7 +96,9 @@ export default function PostDetail() {
               </time>
             </div>
             {post.excerpt && (
-              <p className="mt-6 text-lg text-gray-600 italic">{post.excerpt}</p>
+              <p className="mt-6 text-lg text-gray-600 italic">
+                {post.excerpt}
+              </p>
             )}
             <div className="mt-8 prose prose-lg max-w-none">
               <div

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -6,6 +7,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,16 +27,12 @@ export default function Register() {
         throw new Error(data.message || "注册失败");
       }
 
-      window.location.href = "/auth/login";
+      navigate("/auth/login");
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToLogin = () => {
-    window.location.href = "/auth/login";
   };
 
   return (
@@ -46,12 +44,12 @@ export default function Register() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             已有账号？{" "}
-            <button
-              onClick={goToLogin}
+            <Link
+              to="/auth/login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               立即登录
-            </button>
+            </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

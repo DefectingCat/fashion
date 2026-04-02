@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,16 +26,12 @@ export default function Login() {
         throw new Error(data.message || "登录失败");
       }
 
-      window.location.href = "/";
+      navigate("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToRegister = () => {
-    window.location.href = "/auth/register";
   };
 
   return (
@@ -45,12 +43,12 @@ export default function Login() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             还没有账号？{" "}
-            <button
-              onClick={goToRegister}
+            <Link
+              to="/auth/register"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               立即注册
-            </button>
+            </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import type { Post } from "../../../src/types";
 
 export default function Home() {
@@ -18,10 +19,6 @@ export default function Home() {
       });
   }, []);
 
-  const navigateToPost = (slug: string) => {
-    window.location.href = `/post/${slug}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -38,10 +35,10 @@ export default function Home() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
-              <div
+              <Link
                 key={post.id}
-                onClick={() => navigateToPost(post.slug)}
-                className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                to={`/post/${post.slug}`}
+                className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
               >
                 {post.cover_image && (
                   <div className="h-48 bg-gray-200 overflow-hidden">
@@ -57,7 +54,9 @@ export default function Home() {
                     {post.title}
                   </h2>
                   {post.excerpt && (
-                    <p className="mt-2 text-gray-600 line-clamp-2">{post.excerpt}</p>
+                    <p className="mt-2 text-gray-600 line-clamp-2">
+                      {post.excerpt}
+                    </p>
                   )}
                   <div className="mt-4 flex items-center text-sm text-gray-500">
                     <time dateTime={post.created_at}>
@@ -65,7 +64,7 @@ export default function Home() {
                     </time>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
