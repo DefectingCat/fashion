@@ -3,20 +3,41 @@ import { jwt } from "@elysiajs/jwt";
 
 const JWT_SECRET = "your-super-secret-key-change-in-production";
 
-export const commentsRoutes = new Elysia({ prefix: "/api/posts" })
+export const commentsRoutes = new Elysia({ prefix: "/api" })
   .use(jwt({ secret: JWT_SECRET }))
   .get(
-    "/:id/comments",
+    "/posts/:id/comments",
     async ({ db, params }) => {
       const stmt = db.prepare(`
-        SELECT c.*, u.username as author_name, u.avatar as author_avatar
+        SELECT c.*, 
+               u.id as author_id, 
+               u.username as author_username, 
+               u.email as author_email,
+               u.avatar as author_avatar,
+               u.bio as author_bio,
+               u.created_at as author_created_at
         FROM comments c
         LEFT JOIN users u ON c.author_id = u.id
         WHERE c.post_id = ?
         ORDER BY c.created_at DESC
       `);
       const comments = stmt.all(params.id);
-      return { success: true, comments };
+      return comments.map((c: any) => ({
+        id: c.id,
+        content: c.content,
+        post_id: c.post_id,
+        author_id: c.author_id,
+        parent_id: c.parent_id,
+        created_at: c.created_at,
+        author: c.author_id ? {
+          id: c.author_id,
+          username: c.author_username,
+          email: c.author_email,
+          avatar: c.author_avatar,
+          bio: c.author_bio,
+          created_at: c.author_created_at,
+        } : undefined,
+      }));
     },
     {
       params: t.Object({
@@ -25,7 +46,7 @@ export const commentsRoutes = new Elysia({ prefix: "/api/posts" })
     },
   )
   .post(
-    "/:id/comments",
+    "/posts/:id/comments",
     async ({ db, params, body, jwt, headers }) => {
       const authHeader = headers.authorization;
       if (!authHeader?.startsWith("Bearer ")) {
@@ -53,14 +74,35 @@ export const commentsRoutes = new Elysia({ prefix: "/api/posts" })
 
       const newComment = db
         .prepare(`
-          SELECT c.*, u.username as author_name, u.avatar as author_avatar
+          SELECT c.*, 
+                 u.id as author_id, 
+                 u.username as author_username, 
+                 u.email as author_email,
+                 u.avatar as author_avatar,
+                 u.bio as author_bio,
+                 u.created_at as author_created_at
           FROM comments c
           LEFT JOIN users u ON c.author_id = u.id
           WHERE c.id = ?
         `)
         .get(result.lastInsertRowid);
 
-      return { success: true, comment: newComment };
+      return {
+        id: newComment.id,
+        content: newComment.content,
+        post_id: newComment.post_id,
+        author_id: newComment.author_id,
+        parent_id: newComment.parent_id,
+        created_at: newComment.created_at,
+        author: newComment.author_id ? {
+          id: newComment.author_id,
+          username: newComment.author_username,
+          email: newComment.author_email,
+          avatar: newComment.author_avatar,
+          bio: newComment.author_bio,
+          created_at: newComment.author_created_at,
+        } : undefined,
+      };
     },
     {
       params: t.Object({
@@ -73,7 +115,7 @@ export const commentsRoutes = new Elysia({ prefix: "/api/posts" })
     },
   )
   .delete(
-    "/:id/comments/:commentId",
+    "/comments/:commentId",
     async ({ db, params, jwt, headers }) => {
       const authHeader = headers.authorization;
       if (!authHeader?.startsWith("Bearer ")) {
@@ -101,7 +143,6 @@ export const commentsRoutes = new Elysia({ prefix: "/api/posts" })
     },
     {
       params: t.Object({
-        id: t.String(),
         commentId: t.String(),
       }),
     },

@@ -20,6 +20,8 @@ export default function PostEditor() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(isEdit)
   const [error, setError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     if (isEdit && !authLoading) {
@@ -58,6 +60,38 @@ export default function PostEditor() {
       .replace(/^-+|-+$/g, '')
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !token) return
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      if (!res.ok) {
+        throw new Error('上传失败')
+      }
+
+      const data = await res.json()
+      setForm(f => ({ ...f, cover_image: data.url }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '上传失败')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -90,6 +124,13 @@ export default function PostEditor() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const renderMarkdown = (content: string) => {
+    if (typeof window !== 'undefined' && (window as any).marked) {
+      return { __html: (window as any).marked.parse(content) }
+    }
+    return { __html: content.replace(/\n/g, '<br>') }
   }
 
   if (authLoading || fetching) {
@@ -162,15 +203,36 @@ export default function PostEditor() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              封面图片 URL
+              封面图片
             </label>
-            <input
-              type="url"
-              value={form.cover_image}
-              onChange={(e) => setForm(f => ({ ...f, cover_image: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/image.jpg"
-            />
+            {form.cover_image && (
+              <div className="mb-3">
+                <img
+                  src={form.cover_image}
+                  alt="封面预览"
+                  className="max-h-48 rounded-lg object-cover"
+                />
+              </div>
+            )}
+            <div className="flex gap-3">
+              <input
+                type="url"
+                value={form.cover_image}
+                onChange={(e) => setForm(f => ({ ...f, cover_image: e.target.value }))}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://example.com/image.jpg"
+              />
+              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
+                {uploading ? '上传中...' : '上传图片'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
 
           <div>
@@ -187,17 +249,32 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              内容 (Markdown)
-            </label>
-            <textarea
-              required
-              value={form.content}
-              onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-              rows={16}
-              placeholder="使用 Markdown 编写文章内容..."
-            />
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                内容 (Markdown)
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPreview(!showPreview)}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                {showPreview ? '编辑' : '预览'}
+              </button>
+            </div>
+            {showPreview ? (
+              <div className="border border-gray-300 rounded-lg p-4 min-h-[320px] bg-gray-50 prose prose-lg max-w-none">
+                <div dangerouslySetInnerHTML={renderMarkdown(form.content)} />
+              </div>
+            ) : (
+              <textarea
+                required
+                value={form.content}
+                onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                rows={16}
+                placeholder="使用 Markdown 编写文章内容..."
+              />
+            )}
           </div>
 
           <div className="flex items-center gap-3">

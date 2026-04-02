@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useSSRData } from '../hooks/useSSRData'
+import CommentList from '../components/CommentList'
 import type { Post } from '../../../src/types'
 
 export default function PostDetail() {
@@ -85,6 +86,7 @@ export default function PostDetail() {
             </div>
           </div>
         </article>
+        <CommentList postId={post.id} />
       </main>
     </div>
   )

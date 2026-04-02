@@ -34,12 +34,34 @@ export async function renderSSR(req: Request) {
     </StaticRouter>
   )
 
+  let title = '我的博客'
+  let description = '分享技术，记录成长'
+  let ogImage = ''
+
+  if (ssrData.post) {
+    title = `${ssrData.post.title} - 我的博客`
+    description = ssrData.post.excerpt || description
+    ogImage = ssrData.post.cover_image || ''
+  }
+
   const html = `<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>我的博客</title>
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ''}
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ''}
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
@@ -55,4 +77,15 @@ export async function renderSSR(req: Request) {
   return new Response(html, {
     headers: { 'Content-Type': 'text/html' },
   })
+}
+
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+  return text.replace(/[&<>"']/g, (m) => map[m])
 }

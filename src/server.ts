@@ -5,6 +5,7 @@ import { postsRoutes } from "./routes/posts";
 import { authRoutes } from "./routes/auth";
 import { commentsRoutes } from "./routes/comments";
 import { tagsRoutes } from "./routes/tags";
+import { uploadRoutes } from "./routes/upload";
 import { seedDatabase } from "./db/seed";
 
 async function start() {
@@ -16,6 +17,7 @@ async function start() {
     .use(authRoutes)
     .use(commentsRoutes)
     .use(tagsRoutes)
+    .use(uploadRoutes)
     .get("/public/*", async ({ params }) => {
       const file = Bun.file(`./public/${params["*"]}`);
       if (await file.exists()) {
