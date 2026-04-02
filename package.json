@@ -1,16 +1,22 @@
 {
   "name": "fashion",
-  "module": "index.ts",
+  "module": "src/server.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun --hot src/server.ts",
+    "build": "bun build src/server.ts",
+    "start": "bun src/server.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2"
   },
   "peerDependencies": {
-    "typescript": "^6.0.2"
+    "typescript": "^5"
   },
   "dependencies": {
     "elysia": "^1.4.28",
