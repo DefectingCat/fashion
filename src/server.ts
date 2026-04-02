@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { renderSSR } from "./ssr/renderer";
+import { renderSSR } from "./ssr/renderer.tsx";
 import db from "./db";
 import { postsRoutes } from "./routes/posts";
 import { authRoutes } from "./routes/auth";

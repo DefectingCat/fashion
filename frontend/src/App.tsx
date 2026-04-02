@@ -1,7 +1,6 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
 
-function Home() {
+function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -18,14 +17,6 @@ function Home() {
         </div>
       </main>
     </div>
-  );
-}
-
-function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-    </Routes>
   );
 }
 
