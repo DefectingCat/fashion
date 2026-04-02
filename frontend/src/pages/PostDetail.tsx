@@ -30,15 +30,11 @@ export default function PostDetail() {
   if (!post) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-            <Link to="/" className="text-blue-600 hover:text-blue-800">
-              ← 返回首页
-            </Link>
-          </div>
-        </header>
         <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="text-center py-12">
+            <Link to="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+              ← 返回首页
+            </Link>
             <h1 className="text-2xl font-bold text-gray-900">404</h1>
             <p className="mt-2 text-gray-600">文章不存在</p>
           </div>
@@ -49,14 +45,12 @@ export default function PostDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6">
           <Link to="/" className="text-blue-600 hover:text-blue-800">
             ← 返回首页
           </Link>
         </div>
-      </header>
-      <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <article className="bg-white rounded-xl shadow-md overflow-hidden">
           {post.cover_image && (
             <div className="h-64 bg-gray-200">

@@ -1,19 +1,31 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import PostDetail from "./pages/PostDetail";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import PostDetail from './pages/PostDetail'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import UserProfile from './pages/UserProfile'
+import AdminDashboard from './pages/AdminDashboard'
+import PostEditor from './pages/PostEditor'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/post/:slug" element={<PostDetail />} />
-      <Route path="/auth/login" element={<Login />} />
-      <Route path="/auth/register" element={<Register />} />
-    </Routes>
-  );
+    <AuthProvider>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/post/:slug" element={<PostDetail />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/posts/new" element={<PostEditor />} />
+        <Route path="/admin/posts/:id/edit" element={<PostEditor />} />
+      </Routes>
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App
