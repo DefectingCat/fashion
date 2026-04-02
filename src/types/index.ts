@@ -34,3 +34,9 @@ export interface Tag {
   id: number;
   name: string;
 }
+
+export interface SSRData {
+  posts?: Post[];
+  post?: Post | null;
+  [key: string]: unknown;
+}

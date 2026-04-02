@@ -1,23 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import type { Post } from "../../../src/types";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useSSRData } from '../hooks/useSSRData'
+import type { Post } from '../../../src/types'
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/posts")
-      .then((res) => res.json())
-      .then((data) => {
-        setPosts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch posts:", err);
-        setLoading(false);
-      });
-  }, []);
+  const { data: posts, loading } = useSSRData<Post[]>('posts', async () => {
+    const res = await fetch('/api/posts')
+    return res.json()
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,7 +24,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
+            {posts?.map((post) => (
               <Link
                 key={post.id}
                 to={`/post/${post.slug}`}
@@ -60,7 +50,7 @@ export default function Home() {
                   )}
                   <div className="mt-4 flex items-center text-sm text-gray-500">
                     <time dateTime={post.created_at}>
-                      {new Date(post.created_at).toLocaleDateString("zh-CN")}
+                      {new Date(post.created_at).toLocaleDateString('zh-CN')}
                     </time>
                   </div>
                 </div>
@@ -68,12 +58,12 @@ export default function Home() {
             ))}
           </div>
         )}
-        {!loading && posts.length === 0 && (
+        {!loading && (!posts || posts.length === 0) && (
           <div className="text-center py-12">
             <p className="text-gray-500">暂无文章</p>
           </div>
         )}
       </main>
     </div>
-  );
+  )
 }

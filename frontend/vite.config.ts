@@ -22,6 +22,11 @@ export default defineConfig({
   build: {
     outDir: '../dist/client',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+    },
   },
   ssr: {
     noExternal: ['react', 'react-dom', 'react-router-dom'],

@@ -1,21 +1,24 @@
-import React from "react";
-import { renderToString } from "react-dom/server";
-import { StaticRouter } from "react-router-dom/server";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import PostDetail from "./pages/PostDetail";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import React from 'react'
+import { renderToString } from 'react-dom/server'
+import { StaticRouter } from 'react-router-dom/server'
+import App from './App'
+import { setSSRData, type SSRData } from './ssrData'
+import type { Post } from '../../src/types'
 
-export async function render(url: string) {
-  return renderToString(
+interface RenderResult {
+  html: string
+  data: SSRData
+}
+
+export async function render(url: string, fetchData: (url: string) => Promise<SSRData>): Promise<RenderResult> {
+  const data = await fetchData(url)
+  setSSRData(data)
+
+  const html = renderToString(
     <StaticRouter location={url}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/post/:slug" element={<PostDetail />} />
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/register" element={<Register />} />
-      </Routes>
+      <App />
     </StaticRouter>
-  );
+  )
+
+  return { html, data }
 }
