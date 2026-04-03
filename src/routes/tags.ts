@@ -5,8 +5,8 @@
  * @created 2024-01-01
  */
 
-import { Elysia, t } from 'elysia'
 import type { Database } from 'bun:sqlite'
+import { Elysia, t } from 'elysia'
 
 const createTagsRoutes = (db: Database) => {
   return (

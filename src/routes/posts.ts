@@ -5,8 +5,9 @@
  * @created 2024-01-01
  */
 
-import { Elysia, t } from 'elysia'
 import type { Database } from 'bun:sqlite'
+import { Elysia, t } from 'elysia'
+import type { Post } from '../types'
 
 const createPostsRoutes = (db: Database) => {
   return (
@@ -20,7 +21,7 @@ const createPostsRoutes = (db: Database) => {
         const postsStmt = db.prepare(
           'SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC',
         )
-        const posts = postsStmt.all() as any[]
+        const posts = postsStmt.all() as Post[]
 
         // 为每篇文章加载标签
         const tagsStmt = db.prepare(`
@@ -44,7 +45,7 @@ const createPostsRoutes = (db: Database) => {
         '/:id',
         ({ db, params }) => {
           const postStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
-          const post = postStmt.get(params.id) as any
+          const post = postStmt.get(params.id) as Post | null
 
           if (!post) {
             throw new Error('Post not found')
@@ -104,7 +105,7 @@ const createPostsRoutes = (db: Database) => {
           }
 
           // 返回创建的文章（包含标签）
-          const newPost = db.prepare('SELECT * FROM posts WHERE id = ?').get(postId) as any
+          const newPost = db.prepare('SELECT * FROM posts WHERE id = ?').get(postId) as Post | null
           const tagsStmt = db.prepare(`
           SELECT t.* FROM tags t
           INNER JOIN post_tags pt ON t.id = pt.tag_id
@@ -133,7 +134,7 @@ const createPostsRoutes = (db: Database) => {
         '/:id',
         ({ db, params, body }) => {
           const checkStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
-          const post = checkStmt.get(params.id) as any
+          const post = checkStmt.get(params.id) as Post | null
 
           if (!post) {
             throw new Error('Post not found')
@@ -177,7 +178,9 @@ const createPostsRoutes = (db: Database) => {
           }
 
           // 返回更新后的文章（包含标签）
-          const updatedPost = db.prepare('SELECT * FROM posts WHERE id = ?').get(params.id) as any
+          const updatedPost = db
+            .prepare('SELECT * FROM posts WHERE id = ?')
+            .get(params.id) as Post | null
           const tagsStmt = db.prepare(`
           SELECT t.* FROM tags t
           INNER JOIN post_tags pt ON t.id = pt.tag_id
@@ -209,7 +212,7 @@ const createPostsRoutes = (db: Database) => {
         '/:id',
         ({ db, params }) => {
           const checkStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
-          const post = checkStmt.get(params.id) as any
+          const post = checkStmt.get(params.id) as Post | null
 
           if (!post) {
             throw new Error('Post not found')

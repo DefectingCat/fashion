@@ -1,6 +1,6 @@
-import { Elysia, t } from 'elysia'
-import { jwt } from '@elysiajs/jwt'
 import type { Database } from 'bun:sqlite'
+import { jwt } from '@elysiajs/jwt'
+import { Elysia, t } from 'elysia'
 
 const JWT_SECRET = 'your-super-secret-key-change-in-production'
 

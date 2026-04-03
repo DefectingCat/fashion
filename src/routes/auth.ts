@@ -1,10 +1,10 @@
-import { Elysia, t } from 'elysia'
+import type { Database } from 'bun:sqlite'
 import { jwt } from '@elysiajs/jwt'
 import bcrypt from 'bcrypt'
-import type { Database } from 'bun:sqlite'
+import { Elysia, t } from 'elysia'
 
 const JWT_SECRET = 'your-super-secret-key-change-in-production'
-const JWT_EXPIRES_IN = '7d'
+const _JWT_EXPIRES_IN = '7d'
 
 const createAuthRoutes = (db: Database) => {
   return new Elysia({ prefix: '/api/auth' })

@@ -1,9 +1,9 @@
-import { Elysia, t } from 'elysia'
-import { jwt } from '@elysiajs/jwt'
-import { writeFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import { join } from 'path'
 import type { Database } from 'bun:sqlite'
+import { existsSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { jwt } from '@elysiajs/jwt'
+import { Elysia, t } from 'elysia'
 
 const JWT_SECRET = 'your-super-secret-key-change-in-production'
 const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads')
@@ -18,7 +18,8 @@ const createUploadRoutes = (db: Database) => {
     .use(jwt({ secret: JWT_SECRET }))
     .post(
       '/upload',
-      async ({ db, body, jwt, headers }) => {
+      // biome-ignore lint/correctness/noUnusedFunctionParameters: body is used via Elysia's handler context
+      async ({ db, jwt, headers }, { body }) => {
         const authHeader = headers.authorization
         if (!authHeader?.startsWith('Bearer ')) {
           throw new Error('Unauthorized')
@@ -31,7 +32,7 @@ const createUploadRoutes = (db: Database) => {
           throw new Error('Invalid token')
         }
 
-        const file = body.file as File
+        const file = body.file
         if (!file) {
           throw new Error('No file provided')
         }

@@ -5,8 +5,8 @@
  * @created 2024-01-01
  */
 
-import { Elysia } from 'elysia'
 import type { Database } from 'bun:sqlite'
+import { Elysia } from 'elysia'
 
 const createStatsRoutes = (db: Database) => {
   return new Elysia({ prefix: '/api/stats' }).decorate('db', db).get('/', ({ db }) => {
