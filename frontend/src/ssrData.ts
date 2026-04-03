@@ -2,7 +2,7 @@ import type { Post } from '../../src/types'
 
 export interface SSRData {
   posts?: Post[]
-  post?: Post
+  post?: Post | null
   [key: string]: unknown
 }
 
@@ -13,8 +13,9 @@ export function setSSRData(data: SSRData) {
 }
 
 export function getSSRData(): SSRData {
-  if (typeof window !== 'undefined' && (window as any).__SSR_DATA__) {
-    return (window as any).__SSR_DATA__
+  if (typeof window !== 'undefined' && '__SSR_DATA__' in window) {
+    const ssrWindow = window as Window & { __SSR_DATA__?: SSRData }
+    return ssrWindow.__SSR_DATA__ || __SSR_DATA__
   }
   return __SSR_DATA__
 }

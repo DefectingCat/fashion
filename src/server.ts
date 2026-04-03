@@ -13,11 +13,11 @@ async function start() {
 
   const app = new Elysia()
     .decorate("db", db)
-    .use(postsRoutes)
-    .use(authRoutes)
-    .use(commentsRoutes)
-    .use(tagsRoutes)
-    .use(uploadRoutes)
+    .use(postsRoutes(db))
+    .use(authRoutes(db))
+    .use(commentsRoutes(db))
+    .use(tagsRoutes(db))
+    .use(uploadRoutes(db))
     .get("/public/*", async ({ params }) => {
       const file = Bun.file(`./public/${params["*"]}`);
       if (await file.exists()) {

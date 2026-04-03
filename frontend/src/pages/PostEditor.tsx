@@ -127,8 +127,9 @@ export default function PostEditor() {
   }
 
   const renderMarkdown = (content: string) => {
-    if (typeof window !== 'undefined' && (window as any).marked) {
-      return { __html: (window as any).marked.parse(content) }
+    if (typeof window !== 'undefined' && 'marked' in window) {
+      const markedWindow = window as Window & { marked?: { parse: (text: string) => string } }
+      return { __html: markedWindow.marked?.parse(content) || content.replace(/\n/g, '<br>') }
     }
     return { __html: content.replace(/\n/g, '<br>') }
   }

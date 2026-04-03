@@ -7,15 +7,16 @@ import type { Post } from '../../../src/types'
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
 
-  const { data: post, loading } = useSSRData<Post>('post', async () => {
-    const res = await fetch('/api/posts')
-    const posts: Post[] = await res.json()
-    return posts.find((p) => p.slug === slug) || null
-  })
+  const { data: post, loading } = useSSRData<Post | null>("post", async () => {
+    const res = await fetch("/api/posts");
+    const posts: Post[] = await res.json();
+    return posts.find((p) => p.slug === slug) || null;
+  });
 
   const renderMarkdown = (content: string) => {
-    if (typeof window !== 'undefined' && (window as any).marked) {
-      return { __html: (window as any).marked.parse(content) }
+    if (typeof window !== 'undefined' && 'marked' in window) {
+      const markedWindow = window as Window & { marked?: { parse: (text: string) => string } }
+      return { __html: markedWindow.marked?.parse(content) || content.replace(/\n/g, '<br>') }
     }
     return { __html: content.replace(/\n/g, '<br>') }
   }

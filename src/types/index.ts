@@ -1,3 +1,5 @@
+import type { Database } from "bun:sqlite";
+
 export interface User {
   id: number;
   username: string;
@@ -39,4 +41,8 @@ export interface SSRData {
   posts?: Post[];
   post?: Post | null;
   [key: string]: unknown;
+}
+
+export interface ElysiaDecorators {
+  db: Database;
 }

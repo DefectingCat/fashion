@@ -15,7 +15,7 @@ async function fetchSSRData(url: string): Promise<SSRData> {
   } else if (url.startsWith('/post/')) {
     const slug = url.split('/post/')[1]
     const stmt = db.prepare('SELECT * FROM posts WHERE slug = ?')
-    data.post = stmt.get(slug) as Post || null
+    data.post = (stmt.get(slug as string) as Post) || null;
   }
 
   return data
@@ -87,5 +87,5 @@ function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#039;'
   }
-  return text.replace(/[&<>"']/g, (m) => map[m])
+  return text.replace(/[&<>"']/g, (m) => map[m] || m);
 }
