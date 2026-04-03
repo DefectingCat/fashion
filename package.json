@@ -1,13 +1,14 @@
 {
   "name": "fashion-blog",
   "private": true,
+  "type": "module",
   "workspaces": [
     "frontend"
   ],
   "scripts": {
     "dev": "bun --hot src/server.ts",
     "dev:frontend": "cd frontend && vite",
-    "build": "cd frontend && vite build",
+    "build": "cd frontend && vite build && node scripts/update-renderer.js",
     "start": "bun src/server.ts",
     "fmt": "biome format --write .",
     "fmt:check": "biome format .",
