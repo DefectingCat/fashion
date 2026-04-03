@@ -13,10 +13,12 @@ import { initSchema } from './schema'
  *
  * 使用 WAL (Write-Ahead Logging) 模式提升并发性能
  */
-const db = new Database('blog.db')
+const db = new Database('blog.db', { create: true })
 
-// 启用 WAL 模式，提升并发读写性能
-db.exec('PRAGMA journal_mode = WAL')
+// 同步模式设为 FULL 确保数据持久化
+db.exec('PRAGMA synchronous = FULL')
+// 尝试使用 DELETE 日志模式
+db.exec('PRAGMA journal_mode = DELETE')
 
 // 初始化数据库表结构
 initSchema(db)

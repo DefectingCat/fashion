@@ -190,15 +190,10 @@ export default function TagManager() {
           )}
 
           {showForm && (
-            <form
-              onSubmit={handleSubmit}
-              className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
               <div className="flex gap-4 items-start">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    标签名称
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">标签名称</label>
                   <input
                     type="text"
                     value={tagName}
@@ -209,9 +204,7 @@ export default function TagManager() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    颜色
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">颜色</label>
                   <div className="flex gap-1 flex-wrap">
                     {DEFAULT_COLORS.map((color) => (
                       <button
@@ -265,9 +258,7 @@ export default function TagManager() {
                   >
                     {tag.name}
                   </span>
-                  <span className="text-sm text-gray-500">
-                    {tag.post_count || 0} 篇文章
-                  </span>
+                  <span className="text-sm text-gray-500">{tag.post_count || 0} 篇文章</span>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -286,11 +277,7 @@ export default function TagManager() {
               </div>
             ))}
 
-            {tags.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                暂无标签
-              </div>
-            )}
+            {tags.length === 0 && <div className="text-center py-8 text-gray-500">暂无标签</div>}
           </div>
         </div>
       </div>

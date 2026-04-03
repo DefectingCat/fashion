@@ -125,11 +125,7 @@ export default function TagSelector({
               disabled={disabled}
               className={`
                 px-3 py-1 rounded-full text-sm font-medium transition-all
-                ${
-                  isSelected
-                    ? 'ring-2 ring-offset-2'
-                    : 'opacity-70 hover:opacity-100'
-                }
+                ${isSelected ? 'ring-2 ring-offset-2' : 'opacity-70 hover:opacity-100'}
                 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
               `}
               style={{

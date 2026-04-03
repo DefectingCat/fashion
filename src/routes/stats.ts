@@ -12,10 +12,16 @@ const createStatsRoutes = (db: Database) => {
   return new Elysia({ prefix: '/api/stats' }).decorate('db', db).get('/', ({ db }) => {
     const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number }
     const postCount = db.prepare('SELECT COUNT(*) as count FROM posts').get() as { count: number }
-    const publishedCount = db.prepare('SELECT COUNT(*) as count FROM posts WHERE published = 1').get() as { count: number }
-    const draftCount = db.prepare('SELECT COUNT(*) as count FROM posts WHERE published = 0').get() as { count: number }
+    const publishedCount = db
+      .prepare('SELECT COUNT(*) as count FROM posts WHERE published = 1')
+      .get() as { count: number }
+    const draftCount = db
+      .prepare('SELECT COUNT(*) as count FROM posts WHERE published = 0')
+      .get() as { count: number }
     const tagCount = db.prepare('SELECT COUNT(*) as count FROM tags').get() as { count: number }
-    const commentCount = db.prepare('SELECT COUNT(*) as count FROM comments').get() as { count: number }
+    const commentCount = db.prepare('SELECT COUNT(*) as count FROM comments').get() as {
+      count: number
+    }
 
     return {
       success: true,
