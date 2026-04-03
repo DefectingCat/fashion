@@ -17,11 +17,15 @@ import { getContrastColor } from '../utils/colors'
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
 
-  const { data: post, loading } = useSSRData<(Post & { tags?: Tag[] }) | null>('post', async () => {
-    const res = await fetch('/api/posts')
-    const posts: (Post & { tags?: Tag[] })[] = await res.json()
-    return posts.find((p) => p.slug === slug) || null
-  })
+  const { data: post, loading } = useSSRData<(Post & { tags?: Tag[] }) | null>(
+    'post',
+    async () => {
+      if (!slug) return null;
+      const res = await fetch(`/api/posts/${encodeURIComponent(slug)}`);
+      if (!res.ok) return null;
+      return res.json();
+    },
+  );
 
   if (loading) {
     return (

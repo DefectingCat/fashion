@@ -50,28 +50,35 @@ const createPostsRoutes = (db: Database) => {
        * 包含关联的标签信息
        */
       .get(
-        '/:id',
+        '/:idOrSlug',
         ({ db, params }) => {
-          const postStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
-          const post = postStmt.get(params.id) as Post | null
+          const isNumeric = /^\d+$/.test(params.idOrSlug);
+          let post: Post | null;
 
-          if (!post) {
-            throw new Error('Post not found')
+          if (isNumeric) {
+            const postStmt = db.prepare('SELECT * FROM posts WHERE id = ?');
+            post = postStmt.get(params.idOrSlug) as Post | null;
+          } else {
+            const postStmt = db.prepare('SELECT * FROM posts WHERE slug = ?');
+            post = postStmt.get(params.idOrSlug) as Post | null;
           }
 
-          // 加载文章标签
+          if (!post) {
+            throw new Error('Post not found');
+          }
+
           const tagsStmt = db.prepare(`
           SELECT t.* FROM tags t
           INNER JOIN post_tags pt ON t.id = pt.tag_id
           WHERE pt.post_id = ?
-        `)
-          const tags = tagsStmt.all(params.id)
+        `);
+          const tags = tagsStmt.all(post.id);
 
-          return { ...post, tags }
+          return { ...post, tags };
         },
         {
           params: t.Object({
-            id: t.String(),
+            idOrSlug: t.String(),
           }),
         },
       )

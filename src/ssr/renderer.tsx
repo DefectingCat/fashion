@@ -5,15 +5,51 @@
  * @created 2024-01-01
  */
 
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
 import App from "../../frontend/src/App";
 import { setSSRData } from "../../frontend/src/ssrData";
 import db from "../db";
-import type { Post, SSRData } from "../types";
+import { getAllPublishedPosts, getPostBySlug } from "../db/queries/posts";
+import type { SSRData } from "../types";
 
 const CACHE_TTL = 60000;
 const ssrCache = new Map<string, { data: SSRData; timestamp: number }>();
+
+interface AssetManifest {
+  js: string;
+  css: string;
+}
+
+function getAssetManifest(): AssetManifest {
+  const assetsDir = resolve(process.cwd(), "dist/client/assets");
+  const manifestPath = join(assetsDir, "manifest.json");
+
+  if (existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+      return { js: `/assets/${manifest.js}`, css: `/assets/${manifest.css}` };
+    } catch {}
+  }
+
+  if (existsSync(assetsDir)) {
+    const files = readdirSync(assetsDir);
+    const jsFile = files.find(
+      (f) => f.startsWith("main-") && f.endsWith(".js"),
+    );
+    const cssFile = files.find(
+      (f) => f.startsWith("main-") && f.endsWith(".css"),
+    );
+    return {
+      js: jsFile ? `/assets/${jsFile}` : "/assets/main.js",
+      css: cssFile ? `/assets/${cssFile}` : "/assets/main.css",
+    };
+  }
+
+  return { js: "/assets/main.js", css: "/assets/main.css" };
+}
 
 function getCachedData(key: string): SSRData | null {
   const cached = ssrCache.get(key);
@@ -39,61 +75,15 @@ async function fetchSSRData(url: string): Promise<SSRData> {
   const data: SSRData = {};
 
   if (url === "/" || url === "") {
-    const postsStmt = db.prepare(`
-      SELECT p.*, GROUP_CONCAT(t.id) as tag_ids, GROUP_CONCAT(t.name) as tag_names, GROUP_CONCAT(t.color) as tag_colors
-      FROM posts p
-      LEFT JOIN post_tags pt ON p.id = pt.post_id
-      LEFT JOIN tags t ON t.id = pt.tag_id
-      WHERE p.published = 1
-      GROUP BY p.id
-      ORDER BY p.created_at DESC
-    `);
-    const posts = postsStmt.all() as (Post & {
-      tag_ids: string | null;
-      tag_names: string | null;
-      tag_colors: string | null;
-    })[];
-    data.posts = posts.map((post) => {
-      const tagIds = post.tag_ids ? post.tag_ids.split(",").map(Number) : [];
-      const tagNames = post.tag_names ? post.tag_names.split(",") : [];
-      const tagColors = post.tag_colors ? post.tag_colors.split(",") : [];
-      return {
-        ...post,
-        tags: tagIds.map((id, index) => ({
-          id,
-          name: tagNames[index],
-          color: tagColors[index],
-        })),
-      };
-    });
+    data.posts = getAllPublishedPosts(db);
   } else if (url.startsWith("/post/")) {
-    const slug = url.split("/post/")[1];
-    const postStmt = db.prepare(`
-      SELECT p.*, GROUP_CONCAT(t.id) as tag_ids, GROUP_CONCAT(t.name) as tag_names, GROUP_CONCAT(t.color) as tag_colors
-      FROM posts p
-      LEFT JOIN post_tags pt ON p.id = pt.post_id
-      LEFT JOIN tags t ON t.id = pt.tag_id
-      WHERE p.slug = ?
-      GROUP BY p.id
-    `);
-    const posts = postStmt.all(slug as string) as (Post & {
-      tag_ids: string | null;
-      tag_names: string | null;
-      tag_colors: string | null;
-    })[];
-    if (posts.length > 0) {
-      const post = posts[0];
-      const tagIds = post.tag_ids ? post.tag_ids.split(",").map(Number) : [];
-      const tagNames = post.tag_names ? post.tag_names.split(",") : [];
-      const tagColors = post.tag_colors ? post.tag_colors.split(",") : [];
-      data.post = {
-        ...post,
-        tags: tagIds.map((id, index) => ({
-          id,
-          name: tagNames[index],
-          color: tagColors[index],
-        })),
-      };
+    const slugPart = url.split("/post/")[1];
+    if (slugPart) {
+      const slug = decodeURIComponent(slugPart);
+      const post = getPostBySlug(db, slug);
+      if (post) {
+        data.post = post;
+      }
     }
   }
 
@@ -124,8 +114,22 @@ export async function renderSSR(req: Request) {
     ogImage = ssrData.post.cover_image || "";
   }
 
+  const assets = getAssetManifest();
+
+  const cookieHeader = req.headers.get("cookie") || "";
+  const themeCookie = cookieHeader
+    .split(";")
+    .find((c) => c.trim().startsWith("theme="));
+  const themeValueRaw = themeCookie
+    ? themeCookie.split("=")[1]?.trim()
+    : "light";
+  const themeValue = themeValueRaw || "light";
+  const isDark = themeValue === "dark";
+
+  const htmlClass = isDark ? ' class="dark"' : "";
+
   const html = `<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN"${htmlClass}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -143,22 +147,13 @@ export async function renderSSR(req: Request) {
     ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ""}
 
     <script>
-      (function() {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
-
-    <script>
       window.__SSR_DATA__ = ${JSON.stringify(ssrData)};
     </script>
+    <link rel="stylesheet" crossorigin href="${assets.css}">
   </head>
   <body class="min-h-screen bg-gray-50">
     <div id="root">${appHtml}</div>
-    <script type="module" crossorigin src="/assets/main-Cg-Vto7n.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/main-DYhNQTr0.css">
+    <script type="module" crossorigin src="${assets.js}"></script>
   </body>
 </html>`;
 

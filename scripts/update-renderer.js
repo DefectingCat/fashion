@@ -6,43 +6,34 @@
  * @created 2024-01-01
  */
 
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function updateRenderer() {
-  const assetsDir = resolve(__dirname, '../dist/client/assets')
+  const assetsDir = resolve(__dirname, "../dist/client/assets");
 
   if (!existsSync(assetsDir)) {
-    console.log('⚠️  dist/client/assets not found, skipping...')
-    return
+    console.log("⚠️  dist/client/assets not found, skipping...");
+    return;
   }
 
-  // 找到 main.js 和 main.css 文件
-  const files = readdirSync(assetsDir)
-  const jsFile = files.find((f) => f.startsWith('main-') && f.endsWith('.js'))
-  const cssFile = files.find((f) => f.startsWith('main-') && f.endsWith('.css'))
+  const files = readdirSync(assetsDir);
+  const jsFile = files.find((f) => f.startsWith("main-") && f.endsWith(".js"));
+  const cssFile = files.find((f) => f.startsWith("main-") && f.endsWith(".css"));
 
   if (!jsFile || !cssFile) {
-    console.log('⚠️  main.js or main.css not found')
-    return
+    console.log("⚠️  main.js or main.css not found");
+    return;
   }
 
-  const rendererPath = resolve(__dirname, '../src/ssr/renderer.tsx')
-  let content = readFileSync(rendererPath, 'utf-8')
-
-  // 更新 JS 文件引用
-  content = content.replace(/src="\/assets\/main-[^"]+\.js"/, `src="/assets/${jsFile}"`)
-  console.log(`✅ Updated JS: ${jsFile}`)
-
-  // 更新 CSS 文件引用
-  content = content.replace(/href="\/assets\/main-[^"]+\.css"/, `href="/assets/${cssFile}"`)
-  console.log(`✅ Updated CSS: ${cssFile}`)
-
-  writeFileSync(rendererPath, content, 'utf-8')
-  console.log('✅ renderer.tsx updated successfully!')
+  const manifest = { js: jsFile, css: cssFile };
+  const manifestPath = resolve(assetsDir, "manifest.json");
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf-8");
+  console.log(`✅ Generated manifest.json: ${JSON.stringify(manifest)}`);
+  console.log("✅ Build resources update completed!");
 }
 
-updateRenderer()
+updateRenderer();

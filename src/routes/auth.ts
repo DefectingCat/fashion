@@ -9,14 +9,9 @@ import type { Database } from 'bun:sqlite'
 import { jwt } from '@elysiajs/jwt'
 import bcrypt from 'bcrypt'
 import { Elysia, t } from 'elysia'
+import { requireJwtSecret } from '../utils/env'
 
-/** JWT 密钥，用于签名和验证 token */
-const JWT_SECRET = process.env.JWT_SECRET || 'development-only-secret-change-in-production'
-if (!process.env.JWT_SECRET) {
-  console.warn('[WARN] Using default JWT_SECRET in production is not secure!')
-}
-/** JWT token 过期时间 */
-const _JWT_EXPIRES_IN = '7d'
+const JWT_SECRET = requireJwtSecret()
 
 /**
  * 创建认证路由

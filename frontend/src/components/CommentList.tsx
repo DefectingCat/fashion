@@ -6,9 +6,10 @@
  */
 
 import type React from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Comment, User } from '../../../src/types'
 import { useAuth } from '../contexts/AuthContext'
+import { useFormError } from '../hooks/useFormError'
 
 /**
  * 包含作者信息的评论类型
@@ -37,26 +38,26 @@ interface CommentListProps {
  */
 export default function CommentList({ postId }: CommentListProps) {
   const { user, token } = useAuth()
+  const { error, clearError, withErrorHandling } = useFormError()
   const [comments, setComments] = useState<CommentWithAuthor[]>([])
   const [loading, setLoading] = useState(true)
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const savedCommentRef = useRef<string>('')
 
   /**
    * 获取评论列表
    */
   const fetchComments = useCallback(async () => {
-    try {
+    await withErrorHandling(async () => {
       const res = await fetch(`/api/posts/${postId}/comments`)
       if (res.ok) {
         setComments(await res.json())
       }
-    } catch (err) {
-      console.error('Failed to fetch comments:', err)
-    } finally {
       setLoading(false)
-    }
-  }, [postId])
+      return null
+    }, '获取评论失败')
+  }, [postId, withErrorHandling])
 
   useEffect(() => {
     fetchComments()
@@ -72,7 +73,9 @@ export default function CommentList({ postId }: CommentListProps) {
     if (!newComment.trim() || !token) return
 
     setSubmitting(true)
-    try {
+    clearError()
+
+    await withErrorHandling(async () => {
       const res = await fetch(`/api/posts/${postId}/comments`, {
         method: 'POST',
         headers: {
@@ -82,14 +85,13 @@ export default function CommentList({ postId }: CommentListProps) {
         body: JSON.stringify({ content: newComment }),
       })
       if (res.ok) {
+        savedCommentRef.current = newComment
         setNewComment('')
         fetchComments()
       }
-    } catch (err) {
-      console.error('Failed to post comment:', err)
-    } finally {
-      setSubmitting(false)
-    }
+      return null
+    }, '发布评论失败')
+    setSubmitting(false)
   }
 
   /**
@@ -100,7 +102,7 @@ export default function CommentList({ postId }: CommentListProps) {
   const handleDelete = async (commentId: number) => {
     if (!confirm('确定要删除这条评论吗？') || !token) return
 
-    try {
+    await withErrorHandling(async () => {
       const res = await fetch(`/api/comments/${commentId}`, {
         method: 'DELETE',
         headers: {
@@ -110,9 +112,8 @@ export default function CommentList({ postId }: CommentListProps) {
       if (res.ok) {
         fetchComments()
       }
-    } catch (err) {
-      console.error('Failed to delete comment:', err)
-    }
+      return null
+    }, '删除评论失败')
   }
 
   if (loading) {
@@ -130,6 +131,12 @@ export default function CommentList({ postId }: CommentListProps) {
   return (
     <div className="mt-12">
       <h3 className="text-xl font-bold text-gray-900 mb-6">评论 ({comments.length})</h3>
+
+      {error && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error.message}
+        </div>
+      )}
 
       {user && (
         <form onSubmit={handleSubmit} className="mb-8">
