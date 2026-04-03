@@ -18,6 +18,8 @@ import Register from './pages/Register'
 import TagManager from './pages/TagManager'
 import TagPosts from './pages/TagPosts'
 import UserProfile from './pages/UserProfile'
+import { Routes as AppRoutes } from './routes'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 /**
  * 应用根组件
@@ -28,19 +30,21 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/post/:slug" element={<PostDetail />} />
-          <Route path="/tag/:id" element={<TagPosts />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/posts/new" element={<PostEditor />} />
-          <Route path="/admin/posts/:id/edit" element={<PostEditor />} />
-          <Route path="/admin/tags" element={<TagManager />} />
-        </Routes>
+        <ErrorBoundary>
+          <Navbar />
+          <Routes>
+            <Route path={AppRoutes.Home} element={<Home />} />
+            <Route path={AppRoutes.Post(':slug')} element={<PostDetail />} />
+            <Route path={AppRoutes.Tag(':id')} element={<TagPosts />} />
+            <Route path={AppRoutes.Login} element={<Login />} />
+            <Route path={AppRoutes.Register} element={<Register />} />
+            <Route path={AppRoutes.Profile} element={<UserProfile />} />
+            <Route path={AppRoutes.Admin} element={<AdminDashboard />} />
+            <Route path={AppRoutes.AdminPostNew} element={<PostEditor />} />
+            <Route path={AppRoutes.AdminPostEdit(':id')} element={<PostEditor />} />
+            <Route path={AppRoutes.AdminTags} element={<TagManager />} />
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </ThemeProvider>
   )

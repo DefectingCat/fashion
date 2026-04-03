@@ -98,7 +98,21 @@ export function PasteImageUpload({
         const data = await res.json()
         const imageMarkdown = `![${file.name}](${data.url})\n`
 
-        document.execCommand('insertText', false, imageMarkdown)
+        try {
+          await navigator.clipboard.writeText(imageMarkdown);
+        } catch {
+          const textarea = containerRef.current?.querySelector("textarea");
+          if (textarea) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            textarea.value = before + imageMarkdown + after;
+            textarea.selectionStart = textarea.selectionEnd =
+              start + imageMarkdown.length;
+            textarea.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : '图片上传失败'
         onError?.(errorMsg)

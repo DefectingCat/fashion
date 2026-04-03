@@ -13,7 +13,10 @@ import { jwt } from '@elysiajs/jwt'
 import { Elysia, t } from 'elysia'
 
 /** JWT 密钥，用于验证用户身份 */
-const JWT_SECRET = 'your-super-secret-key-change-in-production'
+const JWT_SECRET = process.env.JWT_SECRET || 'development-only-secret-change-in-production'
+if (!process.env.JWT_SECRET) {
+  console.warn('[WARN] Using default JWT_SECRET in production is not secure!')
+}
 /** 文件上传目录路径 */
 const UPLOAD_DIR = join(process.cwd(), 'public', 'uploads')
 
@@ -54,7 +57,7 @@ const createUploadRoutes = (db: Database) => {
      */
     .post(
       '/upload',
-      async ({ db, jwt, headers }, { body }) => {
+      async ({ db: _db, jwt, headers }, { body }) => {
         const authHeader = headers.authorization
         if (!authHeader?.startsWith('Bearer ')) {
           throw new Error('Unauthorized')

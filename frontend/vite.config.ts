@@ -26,6 +26,12 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
       },
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'editor': ['@uiw/react-md-editor'],
+        },
+      },
     },
   },
   ssr: {

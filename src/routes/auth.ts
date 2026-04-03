@@ -10,8 +10,11 @@ import { jwt } from '@elysiajs/jwt'
 import bcrypt from 'bcrypt'
 import { Elysia, t } from 'elysia'
 
-/** JWT 密钥，用于签名和验证 token（生产环境应从环境变量读取） */
-const JWT_SECRET = 'your-super-secret-key-change-in-production'
+/** JWT 密钥，用于签名和验证 token */
+const JWT_SECRET = process.env.JWT_SECRET || 'development-only-secret-change-in-production'
+if (!process.env.JWT_SECRET) {
+  console.warn('[WARN] Using default JWT_SECRET in production is not secure!')
+}
 /** JWT token 过期时间 */
 const _JWT_EXPIRES_IN = '7d'
 

@@ -18,24 +18,32 @@ const createPostsRoutes = (db: Database) => {
        * 包含关联的标签信息
        */
       .get('/', ({ db }) => {
-        const postsStmt = db.prepare(
-          'SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC',
-        )
-        const posts = postsStmt.all() as Post[]
+        const postsWithTagsStmt = db.prepare(`
+          SELECT p.*, GROUP_CONCAT(t.id) as tag_ids, GROUP_CONCAT(t.name) as tag_names, GROUP_CONCAT(t.color) as tag_colors
+          FROM posts p
+          LEFT JOIN post_tags pt ON p.id = pt.post_id
+          LEFT JOIN tags t ON t.id = pt.tag_id
+          WHERE p.published = 1
+          GROUP BY p.id
+          ORDER BY p.created_at DESC
+        `)
 
-        // 为每篇文章加载标签
-        const tagsStmt = db.prepare(`
-        SELECT t.* FROM tags t
-        INNER JOIN post_tags pt ON t.id = pt.tag_id
-        WHERE pt.post_id = ?
-      `)
+        const posts = postsWithTagsStmt.all() as (Post & { tag_ids: string | null; tag_names: string | null; tag_colors: string | null })[]
 
-        const postsWithTags = posts.map((post) => ({
-          ...post,
-          tags: tagsStmt.all(post.id),
-        }))
+        return posts.map((post) => {
+          const tagIds = post.tag_ids ? post.tag_ids.split(',').map(Number) : []
+          const tagNames = post.tag_names ? post.tag_names.split(',') : []
+          const tagColors = post.tag_colors ? post.tag_colors.split(',') : []
 
-        return postsWithTags
+          return {
+            ...post,
+            tags: tagIds.map((id, index) => ({
+              id,
+              name: tagNames[index],
+              color: tagColors[index],
+            })),
+          }
+        })
       })
       /**
        * 获取单篇文章详情

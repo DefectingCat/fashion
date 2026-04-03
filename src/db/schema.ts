@@ -66,5 +66,13 @@ export function initSchema(db: Database) {
       FOREIGN KEY (author_id) REFERENCES users(id),
       FOREIGN KEY (parent_id) REFERENCES comments(id)
     );
+
+    CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published);
+    CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+    CREATE INDEX IF NOT EXISTS idx_posts_author_id ON posts(author_id);
+    CREATE INDEX IF NOT EXISTS idx_post_tags_post_id ON post_tags(post_id);
+    CREATE INDEX IF NOT EXISTS idx_post_tags_tag_id ON post_tags(tag_id);
+    CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+    CREATE INDEX IF NOT EXISTS idx_comments_author_id ON comments(author_id);
   `)
 }

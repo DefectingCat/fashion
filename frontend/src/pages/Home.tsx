@@ -7,22 +7,10 @@
 
 import { Link } from 'react-router-dom'
 import type { Post, Tag } from '../../../src/types'
+import LoadingSpinner from '../components/LoadingSpinner'
 import { useSSRData } from '../hooks/useSSRData'
-
-/**
- * 根据背景色计算对比色（用于文字）
- *
- * @param hexColor - 十六进制颜色
- * @returns 黑色或白色
- */
-function getContrastColor(hexColor: string): string {
-  const hex = hexColor.replace('#', '')
-  const r = parseInt(hex.substring(0, 2), 16)
-  const g = parseInt(hex.substring(2, 4), 16)
-  const b = parseInt(hex.substring(4, 6), 16)
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  return luminance > 0.5 ? '#1f2937' : '#ffffff'
-}
+import { Routes } from '../routes'
+import { getContrastColor } from '../utils/colors'
 
 export default function Home() {
   const { data: posts, loading } = useSSRData<(Post & { tags?: Tag[] })[]>('posts', async () => {
@@ -34,15 +22,13 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
+          <LoadingSpinner size="lg" className="py-12" />
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts?.map((post) => (
               <Link
                 key={post.id}
-                to={`/post/${post.slug}`}
+                to={Routes.Post(post.slug)}
                 className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
               >
                 {post.cover_image && (
@@ -68,7 +54,7 @@ export default function Home() {
                       {post.tags.map((tag) => (
                         <Link
                           key={tag.id}
-                          to={`/tag/${tag.id}`}
+                          to={Routes.Tag(tag.id)}
                           onClick={(e) => e.stopPropagation()}
                           className="px-2 py-1 rounded-full text-xs font-medium hover:opacity-80 transition-opacity"
                           style={{

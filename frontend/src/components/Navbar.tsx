@@ -7,6 +7,8 @@
 
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import LoadingSkeleton from './LoadingSpinner'
+import { Routes } from '../routes'
 import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
@@ -15,14 +17,14 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate(Routes.Home)
   }
 
   if (loading) {
     return (
       <nav className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse h-6 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+          <LoadingSkeleton className="h-6 w-24" />
         </div>
       </nav>
     )
@@ -33,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link
-            to="/"
+            to={Routes.Home}
             className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             我的博客
@@ -45,13 +47,13 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link
-                  to="/admin"
+                  to={Routes.Admin}
                   className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   管理后台
                 </Link>
                 <Link
-                  to="/profile"
+                  to={Routes.Profile}
                   className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   {user.username}
@@ -67,13 +69,13 @@ export default function Navbar() {
             ) : (
               <>
                 <Link
-                  to="/auth/login"
+                  to={Routes.Login}
                   className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   登录
                 </Link>
                 <Link
-                  to="/auth/register"
+                  to={Routes.Register}
                   className="bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors px-4 py-2 rounded-lg font-medium"
                 >
                   注册

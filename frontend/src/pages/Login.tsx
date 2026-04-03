@@ -9,6 +9,7 @@ import type React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { Routes } from '../routes'
 
 /**
  * 登录页面组件
@@ -34,7 +35,7 @@ export default function Login() {
 
     try {
       await login(form.email, form.password)
-      navigate('/')
+      navigate(Routes.Home)
     } catch (err) {
       setError(err instanceof Error ? err.message : '登录失败')
     } finally {
@@ -46,13 +47,13 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <Link to="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+          <Link to={Routes.Home} className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
             ← 返回首页
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">登录</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             还没有账号？{' '}
-            <Link to="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to={Routes.Register} className="font-medium text-blue-600 hover:text-blue-500">
               立即注册
             </Link>
           </p>
