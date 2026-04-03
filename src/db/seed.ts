@@ -82,16 +82,16 @@ export async function seedDatabase() {
 
   // 插入测试标签
   const tagStmt = db.prepare(`
-    INSERT OR IGNORE INTO tags (name)
-    VALUES (?)
+    INSERT OR IGNORE INTO tags (name, color)
+    VALUES (?, ?)
   `)
 
-  tagStmt.run('React')
-  tagStmt.run('TypeScript')
-  tagStmt.run('Bun')
-  tagStmt.run('Elysia')
-  tagStmt.run('前端')
-  tagStmt.run('教程')
+  tagStmt.run('React', '#61dafb')
+  tagStmt.run('TypeScript', '#3178c6')
+  tagStmt.run('Bun', '#fbf0df')
+  tagStmt.run('Elysia', '#ff69b4')
+  tagStmt.run('前端', '#00d8ff')
+  tagStmt.run('教程', '#9acd32')
 
   // 关联文章和标签
   const postTagStmt = db.prepare(`

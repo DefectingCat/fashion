@@ -100,6 +100,20 @@ export interface Tag {
 
   /** 标签名称 */
   name: string
+
+  /** 标签颜色（十六进制，如 #ff0000） */
+  color?: string
+
+  /** 关联文章数量（查询时计算） */
+  post_count?: number
+}
+
+/**
+ * 文章与标签关联数据结构
+ */
+export interface PostWithTags extends Post {
+  /** 关联的标签列表 */
+  tags?: Tag[]
 }
 
 /**

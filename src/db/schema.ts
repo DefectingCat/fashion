@@ -43,7 +43,8 @@ export function initSchema(db: Database) {
 
     CREATE TABLE IF NOT EXISTS tags (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT UNIQUE NOT NULL
+      name TEXT UNIQUE NOT NULL,
+      color TEXT
     );
 
     CREATE TABLE IF NOT EXISTS post_tags (
