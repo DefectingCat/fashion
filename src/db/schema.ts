@@ -1,5 +1,19 @@
+/**
+ * @file 数据库表结构初始化
+ * @description 定义并初始化博客系统的所有数据库表
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import { Database } from "bun:sqlite";
 
+/**
+ * 初始化数据库表结构
+ *
+ * 创建所有必要的表，如果表已存在则跳过
+ *
+ * @param db - SQLite 数据库实例
+ */
 export function initSchema(db: Database) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (

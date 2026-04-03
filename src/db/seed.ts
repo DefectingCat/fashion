@@ -1,12 +1,28 @@
+/**
+ * @file 数据库种子数据
+ * @description 初始化数据库的测试数据，包括用户、文章、标签和评论
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import db from "./index";
 import bcrypt from "bcrypt";
 
+/**
+ * 播种数据库初始数据
+ *
+ * 插入测试用户、文章、标签和评论数据
+ * 使用 INSERT OR IGNORE 避免重复插入
+ */
 export async function seedDatabase() {
   console.log("🌱 开始播种数据库...");
 
+  // 使用 bcrypt 哈希密码，盐值 rounds 设为 10
+  // 越高越安全但越慢，10 是安全性和性能的平衡点
   const hashedAdminPassword = await bcrypt.hash("admin123", 10);
   const hashedZhangsanPassword = await bcrypt.hash("zhangsan123", 10);
 
+  // 插入测试用户
   const userStmt = db.prepare(`
     INSERT OR IGNORE INTO users (username, email, password, avatar, bio)
     VALUES (?, ?, ?, ?, ?)
@@ -28,6 +44,7 @@ export async function seedDatabase() {
     "前端开发工程师，专注于 React 和 TypeScript"
   );
 
+  // 插入测试文章
   const postStmt = db.prepare(`
     INSERT OR IGNORE INTO posts (title, slug, content, excerpt, cover_image, published, author_id)
     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -63,6 +80,7 @@ export async function seedDatabase() {
     2
   );
 
+  // 插入测试标签
   const tagStmt = db.prepare(`
     INSERT OR IGNORE INTO tags (name)
     VALUES (?)
@@ -75,6 +93,7 @@ export async function seedDatabase() {
   tagStmt.run("前端");
   tagStmt.run("教程");
 
+  // 关联文章和标签
   const postTagStmt = db.prepare(`
     INSERT OR IGNORE INTO post_tags (post_id, tag_id)
     VALUES (?, ?)
@@ -90,6 +109,7 @@ export async function seedDatabase() {
   postTagStmt.run(3, 5);
   postTagStmt.run(3, 6);
 
+  // 插入测试评论
   const commentStmt = db.prepare(`
     INSERT OR IGNORE INTO comments (content, post_id, author_id)
     VALUES (?, ?, ?)
