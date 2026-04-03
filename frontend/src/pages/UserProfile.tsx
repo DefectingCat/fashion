@@ -32,7 +32,7 @@ export default function UserProfile() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ bio }),
       })
@@ -90,9 +90,7 @@ export default function UserProfile() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-gray-700">
-                      {user.bio || '还没有个人介绍'}
-                    </p>
+                    <p className="text-gray-700">{user.bio || '还没有个人介绍'}</p>
                     <button
                       onClick={() => setEditing(true)}
                       className="text-blue-600 hover:text-blue-800 font-medium"

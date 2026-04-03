@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { getSSRData, isSSR, type SSRData } from '../ssrData'
 
-export function useSSRData<T>(key: string, fetchFn: () => Promise<T>): { data: T | null; loading: boolean } {
+export function useSSRData<T>(
+  key: string,
+  fetchFn: () => Promise<T>,
+): { data: T | null; loading: boolean } {
   const ssrData = getSSRData()
   const hasSSRData = ssrData[key] !== undefined
 

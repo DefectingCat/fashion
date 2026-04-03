@@ -10,14 +10,17 @@ interface RenderResult {
   data: SSRData
 }
 
-export async function render(url: string, fetchData: (url: string) => Promise<SSRData>): Promise<RenderResult> {
+export async function render(
+  url: string,
+  fetchData: (url: string) => Promise<SSRData>,
+): Promise<RenderResult> {
   const data = await fetchData(url)
   setSSRData(data)
 
   const html = renderToString(
     <StaticRouter location={url}>
       <App />
-    </StaticRouter>
+    </StaticRouter>,
   )
 
   return { html, data }

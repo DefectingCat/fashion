@@ -5,7 +5,7 @@
  * @created 2024-01-01
  */
 
-import { Database } from "bun:sqlite";
+import { Database } from 'bun:sqlite'
 
 /**
  * 初始化数据库表结构
@@ -65,5 +65,5 @@ export function initSchema(db: Database) {
       FOREIGN KEY (author_id) REFERENCES users(id),
       FOREIGN KEY (parent_id) REFERENCES comments(id)
     );
-  `);
+  `)
 }

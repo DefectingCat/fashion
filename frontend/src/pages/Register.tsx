@@ -31,9 +31,7 @@ export default function Register() {
           <Link to="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
             ← 返回首页
           </Link>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            注册
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">注册</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             已有账号？{' '}
             <Link to="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
@@ -58,7 +56,7 @@ export default function Register() {
                 type="text"
                 required
                 value={form.username}
-                onChange={(e) => setForm(f => ({ ...f, username: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="用户名"
               />
@@ -73,7 +71,7 @@ export default function Register() {
                 type="email"
                 required
                 value={form.email}
-                onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="邮箱地址"
               />
@@ -88,7 +86,7 @@ export default function Register() {
                 type="password"
                 required
                 value={form.password}
-                onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="密码"
               />

@@ -8,9 +8,14 @@
     "dev": "bun --hot src/server.ts",
     "dev:frontend": "cd frontend && vite",
     "build": "cd frontend && vite build",
-    "start": "bun src/server.ts"
+    "start": "bun src/server.ts",
+    "fmt": "biome format --write .",
+    "fmt:check": "biome format .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --apply ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
     "@types/bcrypt": "^6.0.0",
     "@types/bun": "latest",
     "@types/react": "^18.3.12",

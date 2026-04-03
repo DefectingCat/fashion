@@ -42,12 +42,12 @@ interface PasteImageUploadProps {
  * </PasteImageUpload>
  * ```
  */
-export function PasteImageUpload({ 
-  token, 
-  onUploadStart, 
-  onUploadEnd, 
-  onError, 
-  children 
+export function PasteImageUpload({
+  token,
+  onUploadStart,
+  onUploadEnd,
+  onError,
+  children,
 }: PasteImageUploadProps) {
   /**
    * 处理粘贴事件
@@ -84,7 +84,7 @@ export function PasteImageUpload({
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       })

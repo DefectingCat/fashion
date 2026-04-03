@@ -38,9 +38,7 @@ export default function Home() {
                     {post.title}
                   </h2>
                   {post.excerpt && (
-                    <p className="mt-2 text-gray-600 line-clamp-2">
-                      {post.excerpt}
-                    </p>
+                    <p className="mt-2 text-gray-600 line-clamp-2">{post.excerpt}</p>
                   )}
                   <div className="mt-4 flex items-center text-sm text-gray-500">
                     <time dateTime={post.created_at}>

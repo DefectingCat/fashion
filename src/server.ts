@@ -5,15 +5,15 @@
  * @created 2024-01-01
  */
 
-import { Elysia } from "elysia";
-import { renderSSR } from "./ssr/renderer.tsx";
-import db from "./db";
-import { postsRoutes } from "./routes/posts";
-import { authRoutes } from "./routes/auth";
-import { commentsRoutes } from "./routes/comments";
-import { tagsRoutes } from "./routes/tags";
-import { uploadRoutes } from "./routes/upload";
-import { seedDatabase } from "./db/seed";
+import { Elysia } from 'elysia'
+import { renderSSR } from './ssr/renderer.tsx'
+import db from './db'
+import { postsRoutes } from './routes/posts'
+import { authRoutes } from './routes/auth'
+import { commentsRoutes } from './routes/comments'
+import { tagsRoutes } from './routes/tags'
+import { uploadRoutes } from './routes/upload'
+import { seedDatabase } from './db/seed'
 
 /**
  * 启动博客服务器
@@ -24,12 +24,12 @@ import { seedDatabase } from "./db/seed";
  */
 async function start() {
   // 播种数据库初始数据
-  await seedDatabase();
+  await seedDatabase()
 
   // 创建 Elysia 应用实例
   const app = new Elysia()
     // 装饰数据库实例，使其在所有路由中可用
-    .decorate("db", db)
+    .decorate('db', db)
     // 注册文章相关路由
     .use(postsRoutes(db))
     // 注册认证相关路由
@@ -41,27 +41,27 @@ async function start() {
     // 注册文件上传路由
     .use(uploadRoutes(db))
     // 静态文件服务：public 目录
-    .get("/public/*", async ({ params }) => {
-      const file = Bun.file(`./public/${params["*"]}`);
+    .get('/public/*', async ({ params }) => {
+      const file = Bun.file(`./public/${params['*']}`)
       if (await file.exists()) {
-        return new Response(file);
+        return new Response(file)
       }
-      return new Response("Not found", { status: 404 });
+      return new Response('Not found', { status: 404 })
     })
     // 静态文件服务：前端构建资源
-    .get("/assets/*", async ({ params }) => {
-      const file = Bun.file(`./dist/client/assets/${params["*"]}`);
+    .get('/assets/*', async ({ params }) => {
+      const file = Bun.file(`./dist/client/assets/${params['*']}`)
       if (await file.exists()) {
-        return new Response(file);
+        return new Response(file)
       }
-      return new Response("Not found", { status: 404 });
+      return new Response('Not found', { status: 404 })
     })
     // 服务端渲染所有其他路由
-    .get("*", async ({ request }) => {
-      return renderSSR(request);
+    .get('*', async ({ request }) => {
+      return renderSSR(request)
     })
     // 监听 3000 端口
-    .listen(3000);
+    .listen(3000)
 
   // 打印服务器启动信息
   console.log(`
@@ -72,17 +72,17 @@ async function start() {
 ║   🌐 本地访问: http://${app.server?.hostname}:${app.server?.port} ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
-`);
+`)
 
-  return app;
+  return app
 }
 
 // 启动服务器
-start().catch(console.error);
+start().catch(console.error)
 
 /**
  * Elysia 应用类型
  *
  * 用于类型提示，获取 app 实例的完整类型
  */
-export type App = typeof start extends () => Promise<infer T> ? T : never;
+export type App = typeof start extends () => Promise<infer T> ? T : never

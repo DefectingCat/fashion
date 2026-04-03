@@ -8,13 +8,11 @@ import MDEditor from '@uiw/react-md-editor'
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
 
-  const { data: post, loading } = useSSRData<Post | null>("post", async () => {
-    const res = await fetch("/api/posts");
-    const posts: Post[] = await res.json();
-    return posts.find((p) => p.slug === slug) || null;
-  });
-
-
+  const { data: post, loading } = useSSRData<Post | null>('post', async () => {
+    const res = await fetch('/api/posts')
+    const posts: Post[] = await res.json()
+    return posts.find((p) => p.slug === slug) || null
+  })
 
   if (loading) {
     return (
@@ -51,11 +49,7 @@ export default function PostDetail() {
         <article className="bg-white rounded-xl shadow-md overflow-hidden">
           {post.cover_image && (
             <div className="h-64 bg-gray-200">
-              <img
-                src={post.cover_image}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
+              <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover" />
             </div>
           )}
           <div className="p-8">
@@ -69,11 +63,7 @@ export default function PostDetail() {
                 })}
               </time>
             </div>
-            {post.excerpt && (
-              <p className="mt-6 text-lg text-gray-600 italic">
-                {post.excerpt}
-              </p>
-            )}
+            {post.excerpt && <p className="mt-6 text-lg text-gray-600 italic">{post.excerpt}</p>}
             <div className="mt-8 prose prose-lg max-w-none">
               <div className="text-gray-700 leading-relaxed">
                 <MDEditor.Markdown source={post.content} />

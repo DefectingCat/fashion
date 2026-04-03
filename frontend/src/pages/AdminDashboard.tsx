@@ -36,11 +36,11 @@ export default function AdminDashboard() {
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       if (res.ok) {
-        setPosts(posts.filter(p => p.id !== postId))
+        setPosts(posts.filter((p) => p.id !== postId))
       }
     } catch (err) {
       console.error('Failed to delete post:', err)
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
             <div className="h-10 bg-gray-200 rounded w-1/6"></div>
             <div className="space-y-3">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-20 bg-gray-200 rounded"></div>
               ))}
             </div>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
           {postsLoading ? (
             <div className="p-8">
               <div className="animate-pulse space-y-4">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3].map((i) => (
                   <div key={i} className="h-12 bg-gray-200 rounded"></div>
                 ))}
               </div>
@@ -107,7 +107,10 @@ export default function AdminDashboard() {
           ) : (
             <div className="divide-y divide-gray-200">
               {posts.map((post) => (
-                <div key={post.id} className="p-6 flex items-center justify-between hover:bg-gray-50">
+                <div
+                  key={post.id}
+                  className="p-6 flex items-center justify-between hover:bg-gray-50"
+                >
                   <div className="flex-1">
                     <Link
                       to={`/post/${post.slug}`}
@@ -116,14 +119,14 @@ export default function AdminDashboard() {
                       {post.title}
                     </Link>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                      <span>
-                        {new Date(post.created_at).toLocaleDateString('zh-CN')}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        post.published
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                      <span>{new Date(post.created_at).toLocaleDateString('zh-CN')}</span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          post.published
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
                         {post.published ? '已发布' : '草稿'}
                       </span>
                     </div>

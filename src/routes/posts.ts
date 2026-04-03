@@ -1,30 +1,25 @@
-import { Elysia, t } from "elysia";
-import type { Database } from "bun:sqlite";
+import { Elysia, t } from 'elysia'
+import type { Database } from 'bun:sqlite'
 
 const createPostsRoutes = (db: Database) => {
-  return new Elysia({ prefix: "/api/posts" })
-    .decorate("db", db)
+  return new Elysia({ prefix: '/api/posts' })
+    .decorate('db', db)
+    .get('/', ({ db }) => {
+      const stmt = db.prepare('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC')
+      const posts = stmt.all()
+      return posts
+    })
     .get(
-      "/",
-      ({ db }) => {
-        const stmt = db.prepare(
-          "SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC",
-        );
-        const posts = stmt.all();
-        return posts;
-      },
-    )
-    .get(
-      "/:id",
+      '/:id',
       ({ db, params }) => {
-        const stmt = db.prepare("SELECT * FROM posts WHERE id = ?");
-        const post = stmt.get(params.id);
+        const stmt = db.prepare('SELECT * FROM posts WHERE id = ?')
+        const post = stmt.get(params.id)
 
         if (!post) {
-          throw new Error("Post not found");
+          throw new Error('Post not found')
         }
 
-        return post;
+        return post
       },
       {
         params: t.Object({
@@ -33,30 +28,28 @@ const createPostsRoutes = (db: Database) => {
       },
     )
     .post(
-      "/",
+      '/',
       ({ db, body }) => {
         const stmt = db.prepare(`
           INSERT INTO posts (title, slug, content, excerpt, cover_image, published, author_id)
           VALUES (?, ?, ?, ?, ?, ?, ?)
-        `);
+        `)
 
-        const authorId = 1;
-        const slug = body.title.toLowerCase().replace(/\s+/g, "-");
+        const authorId = 1
+        const slug = body.title.toLowerCase().replace(/\s+/g, '-')
 
         const result = stmt.run(
           body.title,
           slug,
           body.content,
-          body.excerpt || "",
-          body.coverImage || "",
+          body.excerpt || '',
+          body.coverImage || '',
           body.published ? 1 : 0,
           authorId,
-        );
+        )
 
-        const newPost = db
-          .prepare("SELECT * FROM posts WHERE id = ?")
-          .get(result.lastInsertRowid);
-        return newPost;
+        const newPost = db.prepare('SELECT * FROM posts WHERE id = ?').get(result.lastInsertRowid)
+        return newPost
       },
       {
         body: t.Object({
@@ -69,13 +62,13 @@ const createPostsRoutes = (db: Database) => {
       },
     )
     .put(
-      "/:id",
+      '/:id',
       ({ db, params, body }) => {
-        const checkStmt = db.prepare("SELECT * FROM posts WHERE id = ?");
-        const post = checkStmt.get(params.id);
+        const checkStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
+        const post = checkStmt.get(params.id)
 
         if (!post) {
-          throw new Error("Post not found");
+          throw new Error('Post not found')
         }
 
         const updateStmt = db.prepare(`
@@ -87,7 +80,7 @@ const createPostsRoutes = (db: Database) => {
               published = COALESCE(?, published),
               updated_at = CURRENT_TIMESTAMP
           WHERE id = ?
-        `);
+        `)
 
         updateStmt.run(
           body.title || null,
@@ -96,12 +89,10 @@ const createPostsRoutes = (db: Database) => {
           body.coverImage || null,
           body.published !== undefined ? (body.published ? 1 : 0) : null,
           params.id,
-        );
+        )
 
-        const updatedPost = db
-          .prepare("SELECT * FROM posts WHERE id = ?")
-          .get(params.id);
-        return updatedPost;
+        const updatedPost = db.prepare('SELECT * FROM posts WHERE id = ?').get(params.id)
+        return updatedPost
       },
       {
         params: t.Object({
@@ -117,26 +108,26 @@ const createPostsRoutes = (db: Database) => {
       },
     )
     .delete(
-      "/:id",
+      '/:id',
       ({ db, params }) => {
-        const checkStmt = db.prepare("SELECT * FROM posts WHERE id = ?");
-        const post = checkStmt.get(params.id);
+        const checkStmt = db.prepare('SELECT * FROM posts WHERE id = ?')
+        const post = checkStmt.get(params.id)
 
         if (!post) {
-          throw new Error("Post not found");
+          throw new Error('Post not found')
         }
 
-        const deleteStmt = db.prepare("DELETE FROM posts WHERE id = ?");
-        deleteStmt.run(params.id);
+        const deleteStmt = db.prepare('DELETE FROM posts WHERE id = ?')
+        deleteStmt.run(params.id)
 
-        return { success: true, message: "Post deleted successfully" };
+        return { success: true, message: 'Post deleted successfully' }
       },
       {
         params: t.Object({
           id: t.String(),
         }),
       },
-    );
-};
+    )
+}
 
-export const postsRoutes = createPostsRoutes;
+export const postsRoutes = createPostsRoutes

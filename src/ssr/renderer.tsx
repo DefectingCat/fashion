@@ -15,7 +15,7 @@ async function fetchSSRData(url: string): Promise<SSRData> {
   } else if (url.startsWith('/post/')) {
     const slug = url.split('/post/')[1]
     const stmt = db.prepare('SELECT * FROM posts WHERE slug = ?')
-    data.post = (stmt.get(slug as string) as Post) || null;
+    data.post = (stmt.get(slug as string) as Post) || null
   }
 
   return data
@@ -31,7 +31,7 @@ export async function renderSSR(req: Request) {
   const appHtml = renderToString(
     <StaticRouter location={path}>
       <App />
-    </StaticRouter>
+    </StaticRouter>,
   )
 
   let title = '我的博客'
@@ -55,12 +55,12 @@ export async function renderSSR(req: Request) {
     <meta property="og:type" content="website" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ""}
+    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ''}
     
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ""}
+    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ''}
     
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -73,7 +73,7 @@ export async function renderSSR(req: Request) {
     <script type="module" crossorigin src="/assets/main-o9l3sYt4.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/main-QNqYXfMF.css">
   </body>
-</html>`;
+</html>`
 
   return new Response(html, {
     headers: { 'Content-Type': 'text/html' },
@@ -86,7 +86,7 @@ function escapeHtml(text: string): string {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#039;'
+    "'": '&#039;',
   }
-  return text.replace(/[&<>"']/g, (m) => map[m] || m);
+  return text.replace(/[&<>"']/g, (m) => map[m] || m)
 }

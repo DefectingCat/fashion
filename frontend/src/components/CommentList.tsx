@@ -44,7 +44,7 @@ export default function CommentList({ postId }: CommentListProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ content: newComment }),
       })
@@ -66,7 +66,7 @@ export default function CommentList({ postId }: CommentListProps) {
       const res = await fetch(`/api/comments/${commentId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       if (res.ok) {
@@ -81,7 +81,7 @@ export default function CommentList({ postId }: CommentListProps) {
     return (
       <div className="mt-8">
         <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="h-24 bg-gray-200 rounded"></div>
           ))}
         </div>
@@ -91,9 +91,7 @@ export default function CommentList({ postId }: CommentListProps) {
 
   return (
     <div className="mt-12">
-      <h3 className="text-xl font-bold text-gray-900 mb-6">
-        评论 ({comments.length})
-      </h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-6">评论 ({comments.length})</h3>
 
       {user && (
         <form onSubmit={handleSubmit} className="mb-8">
@@ -158,9 +156,7 @@ export default function CommentList({ postId }: CommentListProps) {
                   </button>
                 )}
               </div>
-              <p className="mt-3 text-gray-700 whitespace-pre-wrap">
-                {comment.content}
-              </p>
+              <p className="mt-3 text-gray-700 whitespace-pre-wrap">{comment.content}</p>
             </div>
           ))
         )}
