@@ -1,10 +1,32 @@
+/**
+ * @file 博客首页
+ * @description 展示所有已发布的文章列表，包含标签展示
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useSSRData } from '../hooks/useSSRData'
-import type { Post } from '../../../src/types'
+import type { Post, Tag } from '../../../src/types'
+
+/**
+ * 根据背景色计算对比色（用于文字）
+ *
+ * @param hexColor - 十六进制颜色
+ * @returns 黑色或白色
+ */
+function getContrastColor(hexColor: string): string {
+  const hex = hexColor.replace('#', '')
+  const r = parseInt(hex.substring(0, 2), 16)
+  const g = parseInt(hex.substring(2, 4), 16)
+  const b = parseInt(hex.substring(4, 6), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 ? '#1f2937' : '#ffffff'
+}
 
 export default function Home() {
-  const { data: posts, loading } = useSSRData<Post[]>('posts', async () => {
+  const { data: posts, loading } = useSSRData<(Post & { tags?: Tag[] })[]>('posts', async () => {
     const res = await fetch('/api/posts')
     return res.json()
   })
@@ -40,6 +62,27 @@ export default function Home() {
                   {post.excerpt && (
                     <p className="mt-2 text-gray-600 line-clamp-2">{post.excerpt}</p>
                   )}
+
+                  {/* 标签展示 */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {post.tags.map((tag) => (
+                        <Link
+                          key={tag.id}
+                          to={`/tag/${tag.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2 py-1 rounded-full text-xs font-medium hover:opacity-80 transition-opacity"
+                          style={{
+                            backgroundColor: tag.color || '#e5e7eb',
+                            color: tag.color ? getContrastColor(tag.color) : '#374151',
+                          }}
+                        >
+                          {tag.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="mt-4 flex items-center text-sm text-gray-500">
                     <time dateTime={post.created_at}>
                       {new Date(post.created_at).toLocaleDateString('zh-CN')}

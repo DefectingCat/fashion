@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import PostDetail from './pages/PostDetail'
+import TagPosts from './pages/TagPosts'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import UserProfile from './pages/UserProfile'
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/post/:slug" element={<PostDetail />} />
+        <Route path="/tag/:id" element={<TagPosts />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/profile" element={<UserProfile />} />
