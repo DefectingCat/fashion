@@ -6,19 +6,19 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist"],
-    "ignoreUnknown": true,
-    "experimentalScannerIgnores": [
-      "node_modules",
-      "dist",
-      "out",
-      "coverage",
-      "*.db",
-      "*.db-wal",
-      "*.db-shm",
-      "public/uploads",
-      "*.css"
-    ]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/node_modules",
+      "!!**/out",
+      "!!**/coverage",
+      "!!**/*.db",
+      "!!**/*.db-wal",
+      "!!**/*.db-shm",
+      "!!**/public/uploads",
+      "!!**/*.css"
+    ],
+    "ignoreUnknown": true
   },
   "formatter": {
     "enabled": true,
@@ -58,6 +58,21 @@
       "tailwindDirectives": true
     }
   },
+  "overrides": [
+    {
+      "includes": ["**/*.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          },
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
+    }
+  ],
   "assist": {
     "enabled": true,
     "actions": {

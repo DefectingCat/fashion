@@ -10,8 +10,8 @@
     "dev:frontend": "cd frontend && vite",
     "build": "cd frontend && vite build && node scripts/update-renderer.js",
     "start": "bun src/server.ts",
-    "fmt": "biome format --write .",
-    "fmt:check": "biome format .",
+    "fmt": "biome check --write .",
+    "fmt:check": "biome check .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply ."
   },
