@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function UserProfile() {
-  const { user, token, logout, loading } = useAuth()
+  const { user, token, loading } = useAuth()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState(user?.bio || '')
@@ -75,12 +75,14 @@ export default function UserProfile() {
                     />
                     <div className="flex gap-2">
                       <button
+                        type="button"
                         onClick={handleSave}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                       >
                         保存
                       </button>
                       <button
+                        type="button"
                         onClick={() => setEditing(false)}
                         className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50"
                       >
@@ -92,6 +94,7 @@ export default function UserProfile() {
                   <div className="space-y-4">
                     <p className="text-gray-700">{user.bio || '还没有个人介绍'}</p>
                     <button
+                      type="button"
                       onClick={() => setEditing(true)}
                       className="text-blue-600 hover:text-blue-800 font-medium"
                     >

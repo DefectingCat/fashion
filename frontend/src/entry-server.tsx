@@ -1,9 +1,7 @@
-import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import App from './App'
 import { setSSRData, type SSRData } from './ssrData'
-import type { Post } from '../../src/types'
 
 interface RenderResult {
   html: string

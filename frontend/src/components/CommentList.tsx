@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import type React from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import type { Comment, User } from '../../../src/types'
 
@@ -17,11 +18,7 @@ export default function CommentList({ postId }: CommentListProps) {
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  useEffect(() => {
-    fetchComments()
-  }, [postId])
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/posts/${postId}/comments`)
       if (res.ok) {
@@ -32,7 +29,11 @@ export default function CommentList({ postId }: CommentListProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [postId])
+
+  useEffect(() => {
+    fetchComments()
+  }, [fetchComments])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -149,6 +150,7 @@ export default function CommentList({ postId }: CommentListProps) {
                 </div>
                 {user && user.id === comment.author_id && (
                   <button
+                    type="button"
                     onClick={() => handleDelete(comment.id)}
                     className="text-red-500 hover:text-red-700 text-sm"
                   >

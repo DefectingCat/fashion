@@ -5,7 +5,8 @@
  * @created 2024-01-01
  */
 
-import React, { useState, useEffect } from 'react'
+import type React from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Tag } from '../../../src/types'
@@ -51,21 +52,21 @@ export default function TagManager() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchTags()
-  }, [])
-
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
-      const res = await fetch('/api/tags')
-      const data = await res.json()
-      setTags(data.tags || [])
+      const res = await fetch("/api/tags");
+      const data = await res.json();
+      setTags(data.tags || []);
     } catch (err) {
-      console.error('Failed to fetch tags:', err)
+      console.error("Failed to fetch tags:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchTags();
+  }, [fetchTags]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -173,9 +174,10 @@ export default function TagManager() {
           <div className="flex justify-between items-center mb-6">
             <p className="text-gray-600">共 {tags.length} 个标签</p>
             <button
+              type="button"
               onClick={() => {
-                resetForm()
-                setShowForm(true)
+                resetForm();
+                setShowForm(true);
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
@@ -190,10 +192,15 @@ export default function TagManager() {
           )}
 
           {showForm && (
-            <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4"
+            >
               <div className="flex gap-4 items-start">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">标签名称</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    标签名称
+                  </label>
                   <input
                     type="text"
                     value={tagName}
@@ -204,7 +211,9 @@ export default function TagManager() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">颜色</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    颜色
+                  </label>
                   <div className="flex gap-1 flex-wrap">
                     {DEFAULT_COLORS.map((color) => (
                       <button
@@ -213,8 +222,8 @@ export default function TagManager() {
                         onClick={() => setTagColor(color)}
                         className={`w-8 h-8 rounded-full border-2 ${
                           tagColor === color
-                            ? 'border-gray-800 ring-2 ring-offset-1'
-                            : 'border-gray-300'
+                            ? "border-gray-800 ring-2 ring-offset-1"
+                            : "border-gray-300"
                         }`}
                         style={{ backgroundColor: color }}
                       />
@@ -229,7 +238,7 @@ export default function TagManager() {
                   disabled={saving || !tagName.trim()}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {saving ? '保存中...' : editingTag ? '更新' : '创建'}
+                  {saving ? "保存中..." : editingTag ? "更新" : "创建"}
                 </button>
                 <button
                   type="button"
@@ -252,22 +261,28 @@ export default function TagManager() {
                   <span
                     className="px-3 py-1 rounded-full text-sm font-medium"
                     style={{
-                      backgroundColor: tag.color || '#e5e7eb',
-                      color: tag.color ? getContrastColor(tag.color) : '#374151',
+                      backgroundColor: tag.color || "#e5e7eb",
+                      color: tag.color
+                        ? getContrastColor(tag.color)
+                        : "#374151",
                     }}
                   >
                     {tag.name}
                   </span>
-                  <span className="text-sm text-gray-500">{tag.post_count || 0} 篇文章</span>
+                  <span className="text-sm text-gray-500">
+                    {tag.post_count || 0} 篇文章
+                  </span>
                 </div>
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => startEdit(tag)}
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                   >
                     编辑
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleDelete(tag.id)}
                     className="text-red-600 hover:text-red-800 text-sm font-medium"
                   >
@@ -277,10 +292,12 @@ export default function TagManager() {
               </div>
             ))}
 
-            {tags.length === 0 && <div className="text-center py-8 text-gray-500">暂无标签</div>}
+            {tags.length === 0 && (
+              <div className="text-center py-8 text-gray-500">暂无标签</div>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -5,7 +5,7 @@
  * @created 2024-01-01
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import type { User } from '../../../src/types'
 
@@ -62,29 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /** 加载状态 */
   const [loading, setLoading] = useState(true)
 
-  // 初始化时从 localStorage 读取 token
-  useEffect(() => {
-    const savedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
-    if (savedToken) {
-      setToken(savedToken)
-    } else {
-      setLoading(false)
-    }
+  const logout = useCallback(() => {
+    setUser(null)
+    setToken(null)
+    localStorage.removeItem('auth_token')
   }, [])
 
-  // token 变化时获取当前用户信息
-  useEffect(() => {
-    if (token) {
-      fetchCurrentUser()
-    }
-  }, [token])
-
-  /**
-   * 获取当前登录用户信息
-   *
-   * 使用 token 调用后端接口获取用户详情
-   */
-  const fetchCurrentUser = async () => {
+  const fetchCurrentUser = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/me', {
         headers: {
@@ -95,7 +79,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json()
         setUser(data.user)
       } else {
-        // token 无效时登出
         logout()
       }
     } catch (err) {
@@ -104,15 +87,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, logout])
 
-  /**
-   * 用户登录
-   *
-   * @param email - 用户邮箱
-   * @param password - 用户密码
-   * @throws Error - 登录失败时抛出异常
-   */
+  useEffect(() => {
+    const savedToken = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+    if (savedToken) {
+      setToken(savedToken)
+    } else {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (token) {
+      fetchCurrentUser()
+    }
+  }, [token, fetchCurrentUser])
+
   const login = async (email: string, password: string) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -131,14 +122,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user)
   }
 
-  /**
-   * 用户注册
-   *
-   * @param username - 用户名
-   * @param email - 用户邮箱
-   * @param password - 用户密码
-   * @throws Error - 注册失败时抛出异常
-   */
   const register = async (username: string, email: string, password: string) => {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -150,17 +133,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json()
       throw new Error(data.message || '注册失败')
     }
-  }
-
-  /**
-   * 用户登出
-   *
-   * 清除用户状态、token 和本地存储
-   */
-  const logout = () => {
-    setUser(null)
-    setToken(null)
-    localStorage.removeItem('auth_token')
   }
 
   return (

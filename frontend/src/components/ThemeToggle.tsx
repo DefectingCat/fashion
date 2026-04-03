@@ -5,7 +5,6 @@
  * @created 2024-01-01
  */
 
-import React from 'react'
 import { useTheme } from '../contexts/ThemeContext'
 
 /**
@@ -42,6 +41,7 @@ export default function ThemeToggle() {
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={2}
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -61,6 +61,7 @@ export default function ThemeToggle() {
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={2}
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"

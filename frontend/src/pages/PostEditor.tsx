@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import type React from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Post, Tag } from '../../../src/types'
@@ -27,13 +28,7 @@ export default function PostEditor() {
   const [uploading, setUploading] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
 
-  useEffect(() => {
-    if (isEdit && !authLoading) {
-      fetchPost()
-    }
-  }, [id, authLoading])
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const res = await fetch('/api/posts')
       const posts: (Post & { tags?: Tag[] })[] = await res.json()
@@ -58,7 +53,13 @@ export default function PostEditor() {
     } finally {
       setFetching(false)
     }
-  }
+  }, [id, navigate])
+
+  useEffect(() => {
+    if (isEdit && !authLoading) {
+      fetchPost()
+    }
+  }, [isEdit, authLoading, fetchPost])
 
   const generateSlug = (title: string) => {
     return title
@@ -168,8 +169,9 @@ export default function PostEditor() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">标题</label>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">标题</label>
             <input
+              id="title"
               type="text"
               required
               value={form.title}
@@ -187,8 +189,9 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">别名 (Slug)</label>
+            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">别名 (Slug)</label>
             <input
+              id="slug"
               type="text"
               required
               value={form.slug}
@@ -199,7 +202,7 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">封面图片</label>
+            <label htmlFor="cover_image" className="block text-sm font-medium text-gray-700 mb-2">封面图片</label>
             {form.cover_image && (
               <div className="mb-3">
                 <img
@@ -231,8 +234,9 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">摘要</label>
+            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-2">摘要</label>
             <textarea
+              id="excerpt"
               value={form.excerpt}
               onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -242,7 +246,7 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">标签</label>
+            <span className="block text-sm font-medium text-gray-700 mb-2">标签</span>
             <TagSelector
               selectedTagIds={selectedTagIds}
               onChange={setSelectedTagIds}
@@ -252,7 +256,7 @@ export default function PostEditor() {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">内容 (Markdown)</label>
+              <span className="block text-sm font-medium text-gray-700">内容 (Markdown)</span>
               {imageUploading && (
                 <span className="text-sm text-blue-600 flex items-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>

@@ -5,7 +5,7 @@
  * @created 2024-01-01
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Post } from '../../../src/types'
@@ -26,16 +26,7 @@ export default function AdminDashboard() {
   const [postsLoading, setPostsLoading] = useState(true)
   const [stats, setStats] = useState<Stats | null>(null)
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth/login')
-    } else if (user) {
-      fetchPosts()
-      fetchStats()
-    }
-  }, [loading, user])
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const res = await fetch('/api/posts')
       const data = await res.json()
@@ -45,9 +36,9 @@ export default function AdminDashboard() {
     } finally {
       setPostsLoading(false)
     }
-  }
+  }, [])
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const res = await fetch('/api/stats')
       const data = await res.json()
@@ -55,7 +46,16 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('Failed to fetch stats:', err)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth/login')
+    } else if (user) {
+      fetchPosts()
+      fetchStats()
+    }
+  }, [loading, user, navigate, fetchPosts, fetchStats])
 
   const handleDelete = async (postId: number) => {
     if (!confirm('确定要删除这篇文章吗？')) return

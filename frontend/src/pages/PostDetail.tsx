@@ -5,7 +5,6 @@
  * @created 2024-01-01
  */
 
-import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useSSRData } from '../hooks/useSSRData'
 import CommentList from '../components/CommentList'

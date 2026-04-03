@@ -5,7 +5,8 @@
  * @created 2024-01-01
  */
 
-import React, { useState, useEffect } from 'react'
+import type React from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { Tag } from '../../../src/types'
 
 interface TagSelectorProps {
@@ -44,12 +45,7 @@ export default function TagSelector({
   const [newTagColor, setNewTagColor] = useState(DEFAULT_COLORS[0])
   const [creating, setCreating] = useState(false)
 
-  // 加载所有可用标签
-  useEffect(() => {
-    fetchTags()
-  }, [])
-
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       const res = await fetch('/api/tags')
       const data = await res.json()
@@ -59,7 +55,11 @@ export default function TagSelector({
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchTags()
+  }, [fetchTags])
 
   const toggleTag = (tagId: number) => {
     if (disabled) return
@@ -161,7 +161,6 @@ export default function TagSelector({
             onChange={(e) => setNewTagName(e.target.value)}
             placeholder="标签名称"
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            autoFocus
           />
           <div className="flex gap-1">
             {DEFAULT_COLORS.map((color) => (

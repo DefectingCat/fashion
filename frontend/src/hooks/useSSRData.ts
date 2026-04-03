@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
-import { getSSRData, isSSR, type SSRData } from '../ssrData'
+import { useState, useEffect } from 'react'
+import { getSSRData } from '../ssrData'
 
 export function useSSRData<T>(
   key: string,
@@ -16,14 +16,14 @@ export function useSSRData<T>(
   })
 
   const [loading, setLoading] = useState(() => {
-    if (isSSR() || hasSSRData) {
+    if (hasSSRData) {
       return false
     }
     return true
   })
 
   useEffect(() => {
-    if (!hasSSRData && !isSSR()) {
+    if (!hasSSRData) {
       fetchFn()
         .then((fetchedData) => {
           setData(fetchedData)

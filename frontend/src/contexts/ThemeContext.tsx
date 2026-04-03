@@ -5,7 +5,8 @@
  * @created 2024-01-01
  */
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 /**
  * 主题类型

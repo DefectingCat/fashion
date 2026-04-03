@@ -5,7 +5,7 @@
  * @created 2024-01-01
  */
 
-import { Database } from 'bun:sqlite'
+import type { Database } from 'bun:sqlite'
 
 /**
  * 初始化数据库表结构

@@ -5,7 +5,8 @@
  * @created 2024-02-10
  */
 
-import React, { useRef, useEffect } from 'react'
+import type React from "react";
+import { useRef, useEffect, useCallback } from "react";
 
 /**
  * 图片粘贴上传组件属性
@@ -58,71 +59,72 @@ export function PasteImageUpload({
    *
    * @param event - 剪贴板事件
    */
-  const handlePaste = async (event: ClipboardEvent) => {
-    const clipboardData = event.clipboardData
+  const handlePaste = useCallback(
+    async (event: ClipboardEvent) => {
+      const clipboardData = event.clipboardData;
 
-    // 检查剪贴板中是否有文件
-    if (!clipboardData || clipboardData.files.length === 0) {
-      return
-    }
-
-    const file = clipboardData.files[0]
-
-    // 只处理图片文件
-    if (!file.type.startsWith('image/')) {
-      return
-    }
-
-    // 阻止默认粘贴行为
-    event.preventDefault()
-    onUploadStart?.()
-
-    try {
-      // 构建上传表单数据
-      const formData = new FormData()
-      formData.append('file', file)
-
-      // 调用上传接口
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!res.ok) {
-        throw new Error('图片上传失败')
+      if (!clipboardData || clipboardData.files.length === 0) {
+        return;
       }
 
-      const data = await res.json()
-      // 生成 Markdown 图片语法
-      const imageMarkdown = `![${file.name}](${data.url})\n`
+      const file = clipboardData.files[0];
+      if (!file) {
+        return;
+      }
 
-      // HACK: 使用 execCommand 插入文本
-      // 该 API 已过时，但目前是最兼容的方式
-      // 后续应考虑使用 MDEditor 的 API
-      document.execCommand('insertText', false, imageMarkdown)
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : '图片上传失败'
-      onError?.(errorMsg)
-    } finally {
-      onUploadEnd?.()
-    }
-  }
+      if (!file.type.startsWith("image/")) {
+        return;
+      }
 
-  // 使用 useEffect 直接监听 paste 事件
+      event.preventDefault();
+      onUploadStart?.();
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error("图片上传失败");
+        }
+
+        const data = await res.json();
+        const imageMarkdown = `![${file.name}](${data.url})\n`;
+
+        document.execCommand("insertText", false, imageMarkdown);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "图片上传失败";
+        onError?.(errorMsg);
+      } finally {
+        onUploadEnd?.();
+      }
+    },
+    [token, onUploadStart, onUploadEnd, onError],
+  );
+
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const container = containerRef.current;
+    if (!container) return;
 
-    // 监听整个容器树中的 paste 事件
-    container.addEventListener('paste', handlePaste as unknown as EventListener)
+    container.addEventListener(
+      "paste",
+      handlePaste as unknown as EventListener,
+    );
 
     return () => {
-      container.removeEventListener('paste', handlePaste as unknown as EventListener)
-    }
-  }, [token, onUploadStart, onUploadEnd, onError])
+      container.removeEventListener(
+        "paste",
+        handlePaste as unknown as EventListener,
+      );
+    };
+  }, [handlePaste]);
 
   // 返回包装后的组件
   return (

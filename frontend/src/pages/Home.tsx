@@ -5,7 +5,6 @@
  * @created 2024-01-01
  */
 
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { useSSRData } from '../hooks/useSSRData'
 import type { Post, Tag } from '../../../src/types'
