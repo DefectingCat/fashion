@@ -70,7 +70,7 @@ export async function renderSSR(req: Request) {
   </head>
   <body class="bg-gray-50 min-h-screen">
     <div id="root">${appHtml}</div>
-    <script type="module" crossorigin src="/assets/main-CTSy3ovk.js"></script>
+    <script type="module" crossorigin src="/assets/main-BcaD5rca.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/main-BpTb4hQd.css">
   </body>
 </html>`;

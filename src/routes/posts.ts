@@ -94,7 +94,7 @@ const createPostsRoutes = (db: Database) => {
           body.content || null,
           body.excerpt || null,
           body.coverImage || null,
-          body.published ? 1 : null,
+          body.published !== undefined ? (body.published ? 1 : 0) : null,
           params.id,
         );
 

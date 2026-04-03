@@ -109,7 +109,7 @@ export default function PostEditor() {
         },
         body: JSON.stringify({
           ...form,
-          published: form.published ? 1 : 0,
+          published: form.published,
         }),
       })
 
