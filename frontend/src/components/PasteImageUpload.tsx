@@ -5,7 +5,7 @@
  * @created 2024-02-10
  */
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 
 /**
  * 图片粘贴上传组件属性
@@ -49,6 +49,8 @@ export function PasteImageUpload({
   onError,
   children,
 }: PasteImageUploadProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
   /**
    * 处理粘贴事件
    *
@@ -56,7 +58,7 @@ export function PasteImageUpload({
    *
    * @param event - 剪贴板事件
    */
-  const handlePaste = async (event: React.ClipboardEvent) => {
+  const handlePaste = async (event: ClipboardEvent) => {
     const clipboardData = event.clipboardData
 
     // 检查剪贴板中是否有文件
@@ -109,10 +111,23 @@ export function PasteImageUpload({
     }
   }
 
-  // 克隆子组件并添加 onPaste 事件
-  const childWithProps = React.cloneElement(children, {
-    onPaste: handlePaste,
-  })
+  // 使用 useEffect 直接监听 paste 事件
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
 
-  return childWithProps
+    // 监听整个容器树中的 paste 事件
+    container.addEventListener('paste', handlePaste as EventListener)
+
+    return () => {
+      container.removeEventListener('paste', handlePaste as EventListener)
+    }
+  }, [token, onUploadStart, onUploadEnd, onError])
+
+  // 返回包装后的组件
+  return (
+    <div ref={containerRef} style={{ width: '100%' }}>
+      {children}
+    </div>
+  )
 }
