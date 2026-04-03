@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useSSRData } from '../hooks/useSSRData'
 import CommentList from '../components/CommentList'
 import type { Post } from '../../../src/types'
+import MDEditor from '@uiw/react-md-editor'
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -13,13 +14,7 @@ export default function PostDetail() {
     return posts.find((p) => p.slug === slug) || null;
   });
 
-  const renderMarkdown = (content: string) => {
-    if (typeof window !== 'undefined' && 'marked' in window) {
-      const markedWindow = window as Window & { marked?: { parse: (text: string) => string } }
-      return { __html: markedWindow.marked?.parse(content) || content.replace(/\n/g, '<br>') }
-    }
-    return { __html: content.replace(/\n/g, '<br>') }
-  }
+
 
   if (loading) {
     return (
@@ -80,10 +75,9 @@ export default function PostDetail() {
               </p>
             )}
             <div className="mt-8 prose prose-lg max-w-none">
-              <div
-                dangerouslySetInnerHTML={renderMarkdown(post.content)}
-                className="text-gray-700 leading-relaxed"
-              />
+              <div className="text-gray-700 leading-relaxed">
+                <MDEditor.Markdown source={post.content} />
+              </div>
             </div>
           </div>
         </article>

@@ -63,15 +63,15 @@ export async function renderSSR(req: Request) {
     ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ""}
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <script>
       window.__SSR_DATA__ = ${JSON.stringify(ssrData)};
     </script>
   </head>
   <body class="bg-gray-50 min-h-screen">
     <div id="root">${appHtml}</div>
-    <script type="module" crossorigin src="/assets/main-BcaD5rca.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/main-BpTb4hQd.css">
+    <script type="module" crossorigin src="/assets/main-DNRXaeIA.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-QNqYXfMF.css">
   </body>
 </html>`;
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Post } from '../../../src/types'
+import MDEditor from '@uiw/react-md-editor'
 
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>()
@@ -21,7 +22,6 @@ export default function PostEditor() {
   const [fetching, setFetching] = useState(isEdit)
   const [error, setError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     if (isEdit && !authLoading) {
@@ -126,13 +126,7 @@ export default function PostEditor() {
     }
   }
 
-  const renderMarkdown = (content: string) => {
-    if (typeof window !== 'undefined' && 'marked' in window) {
-      const markedWindow = window as Window & { marked?: { parse: (text: string) => string } }
-      return { __html: markedWindow.marked?.parse(content) || content.replace(/\n/g, '<br>') }
-    }
-    return { __html: content.replace(/\n/g, '<br>') }
-  }
+
 
   if (authLoading || fetching) {
     return (
@@ -250,32 +244,17 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                内容 (Markdown)
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowPreview(!showPreview)}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                {showPreview ? '编辑' : '预览'}
-              </button>
-            </div>
-            {showPreview ? (
-              <div className="border border-gray-300 rounded-lg p-4 min-h-[320px] bg-gray-50 prose prose-lg max-w-none">
-                <div dangerouslySetInnerHTML={renderMarkdown(form.content)} />
-              </div>
-            ) : (
-              <textarea
-                required
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              内容 (Markdown)
+            </label>
+            <div data-color-mode="light">
+              <MDEditor
                 value={form.content}
-                onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                rows={16}
+                onChange={(val) => setForm(f => ({ ...f, content: val ?? '' }))}
+                height={500}
                 placeholder="使用 Markdown 编写文章内容..."
               />
-            )}
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
