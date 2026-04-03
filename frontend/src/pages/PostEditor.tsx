@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Post } from '../../../src/types'
 import MDEditor from '@uiw/react-md-editor'
+import { PasteImageUpload } from "../components/PasteImageUpload";
 
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>()
@@ -22,6 +23,7 @@ export default function PostEditor() {
   const [fetching, setFetching] = useState(isEdit)
   const [error, setError] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [imageUploading, setImageUploading] = useState(false);
 
   useEffect(() => {
     if (isEdit && !authLoading) {
@@ -150,11 +152,14 @@ export default function PostEditor() {
             ← 返回管理后台
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 mt-2">
-            {isEdit ? '编辑文章' : '新建文章'}
+            {isEdit ? "编辑文章" : "新建文章"}
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-xl shadow-md p-8 space-y-6"
+        >
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
@@ -170,12 +175,12 @@ export default function PostEditor() {
               required
               value={form.title}
               onChange={(e) => {
-                const title = e.target.value
-                setForm(f => ({
+                const title = e.target.value;
+                setForm((f) => ({
                   ...f,
                   title,
                   slug: f.slug || generateSlug(title),
-                }))
+                }));
               }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="输入文章标题"
@@ -190,7 +195,7 @@ export default function PostEditor() {
               type="text"
               required
               value={form.slug}
-              onChange={(e) => setForm(f => ({ ...f, slug: e.target.value }))}
+              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="文章URL别名"
             />
@@ -213,12 +218,14 @@ export default function PostEditor() {
               <input
                 type="url"
                 value={form.cover_image}
-                onChange={(e) => setForm(f => ({ ...f, cover_image: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, cover_image: e.target.value }))
+                }
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://example.com/image.jpg"
               />
               <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                {uploading ? '上传中...' : '上传图片'}
+                {uploading ? "上传中..." : "上传图片"}
                 <input
                   type="file"
                   accept="image/*"
@@ -236,7 +243,9 @@ export default function PostEditor() {
             </label>
             <textarea
               value={form.excerpt}
-              onChange={(e) => setForm(f => ({ ...f, excerpt: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, excerpt: e.target.value }))
+              }
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
               placeholder="文章简短描述"
@@ -244,17 +253,39 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              内容 (Markdown)
-            </label>
-            <div data-color-mode="light">
-              <MDEditor
-                value={form.content}
-                onChange={(val) => setForm(f => ({ ...f, content: val ?? '' }))}
-                height={500}
-                placeholder="使用 Markdown 编写文章内容..."
-              />
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                内容 (Markdown)
+              </label>
+              {imageUploading && (
+                <span className="text-sm text-blue-600 flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  正在上传图片...
+                </span>
+              )}
             </div>
+            <div data-color-mode="light">
+              <PasteImageUpload
+                token={token}
+                onUploadStart={() => setImageUploading(true)}
+                onUploadEnd={() => setImageUploading(false)}
+                onError={(err) => {
+                  setError(err);
+                  setImageUploading(false);
+                }}
+              >
+                <MDEditor
+                  value={form.content}
+                  onChange={(val) =>
+                    setForm((f) => ({ ...f, content: val ?? "" }))
+                  }
+                  height={500}
+                />
+              </PasteImageUpload>
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              💡 提示：直接粘贴图片即可自动上传
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -262,10 +293,15 @@ export default function PostEditor() {
               type="checkbox"
               id="published"
               checked={form.published}
-              onChange={(e) => setForm(f => ({ ...f, published: e.target.checked }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, published: e.target.checked }))
+              }
               className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
-            <label htmlFor="published" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="published"
+              className="text-sm font-medium text-gray-700"
+            >
               立即发布
             </label>
           </div>
@@ -276,7 +312,7 @@ export default function PostEditor() {
               disabled={loading}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium"
             >
-              {loading ? '保存中...' : '保存'}
+              {loading ? "保存中..." : "保存"}
             </button>
             <Link
               to="/admin"
@@ -288,5 +324,5 @@ export default function PostEditor() {
         </form>
       </div>
     </div>
-  )
+  );
 }
