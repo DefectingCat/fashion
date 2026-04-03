@@ -1,15 +1,41 @@
+/**
+ * @file 用户认证 API 路由
+ * @description 提供用户注册、登录、JWT token 验证和个人信息获取功能
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import type { Database } from 'bun:sqlite'
 import { jwt } from '@elysiajs/jwt'
 import bcrypt from 'bcrypt'
 import { Elysia, t } from 'elysia'
 
+/** JWT 密钥，用于签名和验证 token（生产环境应从环境变量读取） */
 const JWT_SECRET = 'your-super-secret-key-change-in-production'
+/** JWT token 过期时间 */
 const _JWT_EXPIRES_IN = '7d'
 
+/**
+ * 创建认证路由
+ *
+ * @param db - SQLite 数据库实例
+ * @returns Elysia 路由实例
+ */
 const createAuthRoutes = (db: Database) => {
   return new Elysia({ prefix: '/api/auth' })
     .decorate('db', db)
     .use(jwt({ secret: JWT_SECRET }))
+    /**
+     * 用户注册
+     *
+     * 创建新用户账号，使用 bcrypt 哈希密码
+     *
+     * @param body.username - 用户名
+     * @param body.email - 用户邮箱
+     * @param body.password - 用户密码（将被哈希存储）
+     * @returns 注册结果，包含用户信息和 JWT token
+     * @throws Error - 用户名或邮箱已存在时抛出
+     */
     .post(
       '/register',
       async ({ db, body, jwt }) => {
@@ -55,6 +81,16 @@ const createAuthRoutes = (db: Database) => {
         }),
       },
     )
+    /**
+     * 用户登录
+     *
+     * 验证用户凭证，验证成功后返回 JWT token
+     *
+     * @param body.email - 用户邮箱
+     * @param body.password - 用户密码
+     * @returns 登录结果，包含用户信息（不含密码）和 JWT token
+     * @throws Error - 邮箱或密码错误时抛出
+     */
     .post(
       '/login',
       async ({ db, body, jwt }) => {
@@ -86,6 +122,15 @@ const createAuthRoutes = (db: Database) => {
         }),
       },
     )
+    /**
+     * 获取当前用户信息
+     *
+     * 通过 JWT token 验证用户身份，返回用户详细信息
+     *
+     * @param headers.authorization - Bearer token
+     * @returns 用户信息
+     * @throws Error - token 无效或用户不存在时抛出
+     */
     .get('/me', async ({ db, jwt, headers }) => {
       const authHeader = headers.authorization
       if (!authHeader?.startsWith('Bearer ')) {
@@ -112,4 +157,5 @@ const createAuthRoutes = (db: Database) => {
     })
 }
 
+/** 导出认证路由创建函数 */
 export const authRoutes = createAuthRoutes

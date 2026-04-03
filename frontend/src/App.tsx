@@ -1,3 +1,10 @@
+/**
+ * @file 应用根组件
+ * @description 应用路由配置和根组件，包含所有页面路由定义
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import { Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import { AuthProvider } from './contexts/AuthContext'
@@ -12,6 +19,11 @@ import TagManager from './pages/TagManager'
 import TagPosts from './pages/TagPosts'
 import UserProfile from './pages/UserProfile'
 
+/**
+ * 应用根组件
+ *
+ * 配置主题Provider、认证Provider和路由
+ */
 function App() {
   return (
     <ThemeProvider>

@@ -1,8 +1,20 @@
+/**
+ * @file 注册页面
+ * @description 用户注册页面，提供用户名、邮箱、密码注册功能
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import type React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+/**
+ * 注册页面组件
+ *
+ * 提供用户注册表单，注册成功后跳转到登录页面
+ */
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -10,6 +22,11 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  /**
+   * 处理表单提交
+   *
+   * @param event - 表单提交事件
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)

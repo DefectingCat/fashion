@@ -1,16 +1,40 @@
+/**
+ * @file 评论列表组件
+ * @description 展示文章评论列表，支持评论发布和删除功能
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import type { Comment, User } from '../../../src/types'
 import { useAuth } from '../contexts/AuthContext'
 
+/**
+ * 包含作者信息的评论类型
+ */
 interface CommentWithAuthor extends Comment {
+  /** 评论作者信息 */
   author?: User
 }
 
+/**
+ * 评论列表组件属性
+ */
 interface CommentListProps {
+  /** 文章 ID */
   postId: number
 }
 
+/**
+ * 评论列表组件
+ *
+ * 展示指定文章的评论，支持登录用户发表评论和删除自己的评论
+ *
+ * @param props - 组件属性
+ * @param props.postId - 文章 ID
+ * @returns 评论列表组件
+ */
 export default function CommentList({ postId }: CommentListProps) {
   const { user, token } = useAuth()
   const [comments, setComments] = useState<CommentWithAuthor[]>([])
@@ -18,6 +42,9 @@ export default function CommentList({ postId }: CommentListProps) {
   const [newComment, setNewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  /**
+   * 获取评论列表
+   */
   const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/posts/${postId}/comments`)
@@ -35,6 +62,11 @@ export default function CommentList({ postId }: CommentListProps) {
     fetchComments()
   }, [fetchComments])
 
+  /**
+   * 提交新评论
+   *
+   * @param event - 表单提交事件
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newComment.trim() || !token) return
@@ -60,6 +92,11 @@ export default function CommentList({ postId }: CommentListProps) {
     }
   }
 
+  /**
+   * 删除评论
+   *
+   * @param commentId - 要删除的评论 ID
+   */
   const handleDelete = async (commentId: number) => {
     if (!confirm('确定要删除这条评论吗？') || !token) return
 

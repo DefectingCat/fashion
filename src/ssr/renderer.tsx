@@ -1,46 +1,67 @@
-import { renderToString } from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom/server'
-import App from '../../frontend/src/App'
-import { setSSRData } from '../../frontend/src/ssrData'
-import db from '../db'
-import type { Post, SSRData } from '../types'
+/**
+ * @file 服务端渲染器
+ * @description 处理 SSR 请求，将 React 组件渲染为 HTML 字符串
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
 
+import { renderToString } from "react-dom/server";
+import { StaticRouter } from "react-router-dom/server";
+import App from "../../frontend/src/App";
+import { setSSRData } from "../../frontend/src/ssrData";
+import db from "../db";
+import type { Post, SSRData } from "../types";
+
+/**
+ * 根据 URL 获取服务端渲染所需的数据
+ *
+ * @param url - 请求的 URL 路径
+ * @returns SSR 数据对象，包含 posts 或 post
+ */
 async function fetchSSRData(url: string): Promise<SSRData> {
-  const data: SSRData = {}
+  const data: SSRData = {};
 
-  if (url === '/' || url === '') {
-    const stmt = db.prepare('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC')
-    data.posts = stmt.all() as Post[]
-  } else if (url.startsWith('/post/')) {
-    const slug = url.split('/post/')[1]
-    const stmt = db.prepare('SELECT * FROM posts WHERE slug = ?')
-    data.post = (stmt.get(slug as string) as Post) || null
+  if (url === "/" || url === "") {
+    const stmt = db.prepare(
+      "SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC",
+    );
+    data.posts = stmt.all() as Post[];
+  } else if (url.startsWith("/post/")) {
+    const slug = url.split("/post/")[1];
+    const stmt = db.prepare("SELECT * FROM posts WHERE slug = ?");
+    data.post = (stmt.get(slug as string) as Post) || null;
   }
 
-  return data
+  return data;
 }
 
+/**
+ * 渲染 SSR 页面
+ *
+ * @param req - HTTP 请求对象
+ * @returns HTML 响应
+ */
 export async function renderSSR(req: Request) {
-  const url = new URL(req.url)
-  const path = url.pathname
+  const url = new URL(req.url);
+  const path = url.pathname;
 
-  const ssrData = await fetchSSRData(path)
-  setSSRData(ssrData)
+  const ssrData = await fetchSSRData(path);
+  setSSRData(ssrData);
 
   const appHtml = renderToString(
     <StaticRouter location={path}>
       <App />
     </StaticRouter>,
-  )
+  );
 
-  let title = '我的博客'
-  let description = '分享技术，记录成长'
-  let ogImage = ''
+  let title = "我的博客";
+  let description = "分享技术，记录成长";
+  let ogImage = "";
 
   if (ssrData.post) {
-    title = `${ssrData.post.title} - 我的博客`
-    description = ssrData.post.excerpt || description
-    ogImage = ssrData.post.cover_image || ''
+    title = `${ssrData.post.title} - 我的博客`;
+    description = ssrData.post.excerpt || description;
+    ogImage = ssrData.post.cover_image || "";
   }
 
   const html = `<!DOCTYPE html>
@@ -50,17 +71,17 @@ export async function renderSSR(req: Request) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
-    
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ''}
-    
+    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ""}
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ''}
-    
+    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ""}
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -72,20 +93,28 @@ export async function renderSSR(req: Request) {
     <script type="module" crossorigin src="/assets/main-Cg-Vto7n.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/main-DYhNQTr0.css">
   </body>
-</html>`
+</html>`;
 
   return new Response(html, {
-    headers: { 'Content-Type': 'text/html' },
-  })
+    headers: { "Content-Type": "text/html" },
+  });
 }
 
+/**
+ * HTML 特殊字符转义
+ *
+ * 防止 XSS 攻击，对特殊字符进行编码
+ *
+ * @param text - 原始文本
+ * @returns 转义后的文本
+ */
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  }
-  return text.replace(/[&<>"']/g, (m) => map[m] || m)
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m] || m);
 }

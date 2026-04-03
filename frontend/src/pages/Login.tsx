@@ -1,8 +1,20 @@
+/**
+ * @file 登录页面
+ * @description 用户登录页面，提供邮箱密码登录功能
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import type React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+/**
+ * 登录页面组件
+ *
+ * 提供用户登录表单，登录成功后跳转到首页
+ */
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -10,6 +22,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  /**
+   * 处理表单提交
+   *
+   * @param event - 表单提交事件
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)

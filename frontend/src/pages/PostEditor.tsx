@@ -1,3 +1,10 @@
+/**
+ * @file 文章编辑器页面
+ * @description 创建和编辑文章，支持 Markdown 编辑、图片上传和标签管理
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import MDEditor from '@uiw/react-md-editor'
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
@@ -7,6 +14,11 @@ import { PasteImageUpload } from '../components/PasteImageUpload'
 import TagSelector from '../components/TagSelector'
 import { useAuth } from '../contexts/AuthContext'
 
+/**
+ * 文章编辑器页面组件
+ *
+ * 支持创建新文章和编辑现有文章，提供 Markdown 编辑、封面图片上传和标签关联功能
+ */
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>()
   const { token, loading: authLoading } = useAuth()
@@ -28,6 +40,11 @@ export default function PostEditor() {
   const [uploading, setUploading] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
 
+  /**
+   * 获取文章详情
+   *
+   * 编辑模式下加载文章数据进行回填
+   */
   const fetchPost = useCallback(async () => {
     try {
       const res = await fetch('/api/posts')
@@ -61,6 +78,14 @@ export default function PostEditor() {
     }
   }, [isEdit, authLoading, fetchPost])
 
+  /**
+   * 生成 URL slug
+   *
+   * 将标题转换为 URL 友好的 slug 格式
+   *
+   * @param title - 文章标题
+   * @returns slug 字符串
+   */
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
@@ -68,6 +93,11 @@ export default function PostEditor() {
       .replace(/^-+|-+$/g, '')
   }
 
+  /**
+   * 处理封面上传
+   *
+   * @param event - 文件输入 change 事件
+   */
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !token) return
@@ -100,6 +130,11 @@ export default function PostEditor() {
     }
   }
 
+  /**
+   * 处理表单提交
+   *
+   * @param event - 表单提交事件
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)

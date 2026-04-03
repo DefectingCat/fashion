@@ -1,7 +1,19 @@
+/**
+ * @file 用户资料页面
+ * @description 展示和编辑当前登录用户的个人资料
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
+/**
+ * 用户资料页面组件
+ *
+ * 展示当前登录用户的个人信息，支持编辑个人简介
+ */
 export default function UserProfile() {
   const { user, token, loading } = useAuth()
   const navigate = useNavigate()
@@ -26,6 +38,9 @@ export default function UserProfile() {
     return null
   }
 
+  /**
+   * 保存个人简介
+   */
   const handleSave = async () => {
     try {
       const res = await fetch('/api/auth/profile', {
