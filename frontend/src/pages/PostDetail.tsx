@@ -5,11 +5,11 @@
  * @created 2024-01-01
  */
 
-import { useParams, Link } from 'react-router-dom'
-import { useSSRData } from '../hooks/useSSRData'
-import CommentList from '../components/CommentList'
-import type { Post, Tag } from '../../../src/types'
 import MDEditor from '@uiw/react-md-editor'
+import { Link, useParams } from 'react-router-dom'
+import type { Post, Tag } from '../../../src/types'
+import CommentList from '../components/CommentList'
+import { useSSRData } from '../hooks/useSSRData'
 
 /**
  * 根据背景色计算对比色（用于文字）

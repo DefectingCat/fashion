@@ -5,10 +5,10 @@
  * @created 2024-01-01
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import type { Post } from '../../../src/types'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Stats {
   users: number

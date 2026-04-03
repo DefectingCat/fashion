@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function UserProfile() {
   const { user, token, loading } = useAuth()

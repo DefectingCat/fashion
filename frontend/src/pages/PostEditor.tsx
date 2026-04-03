@@ -1,11 +1,11 @@
-import type React from 'react'
-import { useState, useEffect, useCallback } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import type { Post, Tag } from '../../../src/types'
 import MDEditor from '@uiw/react-md-editor'
+import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import type { Post, Tag } from '../../../src/types'
 import { PasteImageUpload } from '../components/PasteImageUpload'
 import TagSelector from '../components/TagSelector'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>()
@@ -169,7 +169,9 @@ export default function PostEditor() {
           )}
 
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">标题</label>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              标题
+            </label>
             <input
               id="title"
               type="text"
@@ -189,7 +191,9 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">别名 (Slug)</label>
+            <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-2">
+              别名 (Slug)
+            </label>
             <input
               id="slug"
               type="text"
@@ -202,7 +206,9 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label htmlFor="cover_image" className="block text-sm font-medium text-gray-700 mb-2">封面图片</label>
+            <label htmlFor="cover_image" className="block text-sm font-medium text-gray-700 mb-2">
+              封面图片
+            </label>
             {form.cover_image && (
               <div className="mb-3">
                 <img
@@ -234,7 +240,9 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-2">摘要</label>
+            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 mb-2">
+              摘要
+            </label>
             <textarea
               id="excerpt"
               value={form.excerpt}

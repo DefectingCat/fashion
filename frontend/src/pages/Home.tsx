@@ -6,8 +6,8 @@
  */
 
 import { Link } from 'react-router-dom'
-import { useSSRData } from '../hooks/useSSRData'
 import type { Post, Tag } from '../../../src/types'
+import { useSSRData } from '../hooks/useSSRData'
 
 /**
  * 根据背景色计算对比色（用于文字）
