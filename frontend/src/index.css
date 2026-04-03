@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@layer base {
+  /* 亮色模式样式（默认） */
+  :root {
+    --color-bg-primary: #f9fafb;
+    --color-bg-secondary: #ffffff;
+    --color-text-primary: #111827;
+    --color-text-secondary: #374151;
+    --color-border: #e5e7eb;
+  }
+
+  /* 暗色模式样式 */
+  .dark {
+    --color-bg-primary: #111827;
+    --color-bg-secondary: #1f2937;
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-border: #374151;
+  }
+}
+
+/* 平滑过渡动画 */
+html {
+  transition-property: background-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
