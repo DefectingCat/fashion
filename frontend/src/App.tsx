@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import UserProfile from './pages/UserProfile'
 import AdminDashboard from './pages/AdminDashboard'
 import PostEditor from './pages/PostEditor'
+import TagManager from './pages/TagManager'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/posts/new" element={<PostEditor />} />
         <Route path="/admin/posts/:id/edit" element={<PostEditor />} />
+        <Route path="/admin/tags" element={<TagManager />} />
       </Routes>
     </AuthProvider>
   )

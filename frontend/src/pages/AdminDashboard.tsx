@@ -1,19 +1,37 @@
+/**
+ * @file 管理后台首页
+ * @description 展示文章列表和系统统计数据
+ * @author Fashion Blog Team
+ * @created 2024-01-01
+ */
+
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { Post } from '../../../src/types'
+
+interface Stats {
+  users: number
+  posts: number
+  publishedPosts: number
+  draftPosts: number
+  tags: number
+  comments: number
+}
 
 export default function AdminDashboard() {
   const { user, token, loading } = useAuth()
   const navigate = useNavigate()
   const [posts, setPosts] = useState<Post[]>([])
   const [postsLoading, setPostsLoading] = useState(true)
+  const [stats, setStats] = useState<Stats | null>(null)
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth/login')
     } else if (user) {
       fetchPosts()
+      fetchStats()
     }
   }, [loading, user])
 
@@ -26,6 +44,16 @@ export default function AdminDashboard() {
       console.error('Failed to fetch posts:', err)
     } finally {
       setPostsLoading(false)
+    }
+  }
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/stats')
+      const data = await res.json()
+      setStats(data.stats)
+    } catch (err) {
+      console.error('Failed to fetch stats:', err)
     }
   }
 
@@ -87,6 +115,32 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
+        {/* 统计卡片 */}
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="text-3xl font-bold text-blue-600">{stats.posts}</div>
+              <div className="text-gray-500 mt-1">文章总数</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="text-3xl font-bold text-green-600">{stats.publishedPosts}</div>
+              <div className="text-gray-500 mt-1">已发布</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="text-3xl font-bold text-purple-600">{stats.tags}</div>
+              <div className="text-gray-500 mt-1">
+                <Link to="/admin/tags" className="hover:text-purple-600">
+                  标签管理
+                </Link>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="text-3xl font-bold text-orange-600">{stats.comments}</div>
+              <div className="text-gray-500 mt-1">评论总数</div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">文章列表</h2>
@@ -139,6 +193,7 @@ export default function AdminDashboard() {
                       编辑
                     </Link>
                     <button
+                      type="button"
                       onClick={() => handleDelete(post.id)}
                       className="text-red-600 hover:text-red-800 px-3 py-1 rounded-lg hover:bg-red-50"
                     >

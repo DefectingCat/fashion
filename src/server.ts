@@ -13,6 +13,7 @@ import { authRoutes } from './routes/auth'
 import { commentsRoutes } from './routes/comments'
 import { tagsRoutes } from './routes/tags'
 import { uploadRoutes } from './routes/upload'
+import { statsRoutes } from './routes/stats'
 import { seedDatabase } from './db/seed'
 
 /**
@@ -40,6 +41,8 @@ async function start() {
     .use(tagsRoutes(db))
     // 注册文件上传路由
     .use(uploadRoutes(db))
+    // 注册统计路由
+    .use(statsRoutes(db))
     // 静态文件服务：public 目录
     .get('/public/*', async ({ params }) => {
       const file = Bun.file(`./public/${params['*']}`)
