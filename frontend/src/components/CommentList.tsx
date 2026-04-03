@@ -1,7 +1,7 @@
 import type React from 'react'
-import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+import { useCallback, useEffect, useState } from 'react'
 import type { Comment, User } from '../../../src/types'
+import { useAuth } from '../contexts/AuthContext'
 
 interface CommentWithAuthor extends Comment {
   author?: User

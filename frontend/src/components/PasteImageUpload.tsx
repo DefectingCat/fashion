@@ -5,8 +5,8 @@
  * @created 2024-02-10
  */
 
-import type React from "react";
-import { useRef, useEffect, useCallback } from "react";
+import type React from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 /**
  * 图片粘贴上传组件属性
@@ -61,70 +61,64 @@ export function PasteImageUpload({
    */
   const handlePaste = useCallback(
     async (event: ClipboardEvent) => {
-      const clipboardData = event.clipboardData;
+      const clipboardData = event.clipboardData
 
       if (!clipboardData || clipboardData.files.length === 0) {
-        return;
+        return
       }
 
-      const file = clipboardData.files[0];
+      const file = clipboardData.files[0]
       if (!file) {
-        return;
+        return
       }
 
-      if (!file.type.startsWith("image/")) {
-        return;
+      if (!file.type.startsWith('image/')) {
+        return
       }
 
-      event.preventDefault();
-      onUploadStart?.();
+      event.preventDefault()
+      onUploadStart?.()
 
       try {
-        const formData = new FormData();
-        formData.append("file", file);
+        const formData = new FormData()
+        formData.append('file', file)
 
-        const res = await fetch("/api/upload", {
-          method: "POST",
+        const res = await fetch('/api/upload', {
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
           },
           body: formData,
-        });
+        })
 
         if (!res.ok) {
-          throw new Error("图片上传失败");
+          throw new Error('图片上传失败')
         }
 
-        const data = await res.json();
-        const imageMarkdown = `![${file.name}](${data.url})\n`;
+        const data = await res.json()
+        const imageMarkdown = `![${file.name}](${data.url})\n`
 
-        document.execCommand("insertText", false, imageMarkdown);
+        document.execCommand('insertText', false, imageMarkdown)
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : "图片上传失败";
-        onError?.(errorMsg);
+        const errorMsg = err instanceof Error ? err.message : '图片上传失败'
+        onError?.(errorMsg)
       } finally {
-        onUploadEnd?.();
+        onUploadEnd?.()
       }
     },
     [token, onUploadStart, onUploadEnd, onError],
-  );
+  )
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const container = containerRef.current
+    if (!container) return
 
-    container.addEventListener(
-      "paste",
-      handlePaste as unknown as EventListener,
-    );
+    container.addEventListener('paste', handlePaste as unknown as EventListener)
 
     return () => {
-      container.removeEventListener(
-        "paste",
-        handlePaste as unknown as EventListener,
-      );
-    };
-  }, [handlePaste]);
+      container.removeEventListener('paste', handlePaste as unknown as EventListener)
+    }
+  }, [handlePaste])
 
   // 返回包装后的组件
   return (
