@@ -55,12 +55,12 @@ export async function renderSSR(req: Request) {
     <meta property="og:type" content="website" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ''}
+    ${ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />` : ""}
     
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ''}
+    ${ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />` : ""}
     
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -70,10 +70,10 @@ export async function renderSSR(req: Request) {
   </head>
   <body class="bg-gray-50 min-h-screen">
     <div id="root">${appHtml}</div>
-    <script type="module" crossorigin src="/assets/main-DL4MfCdC.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/main-QNqYXfMF.css">
+    <script type="module" crossorigin src="/assets/main-Cg-Vto7n.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/main-DYhNQTr0.css">
   </body>
-</html>`
+</html>`;
 
   return new Response(html, {
     headers: { 'Content-Type': 'text/html' },

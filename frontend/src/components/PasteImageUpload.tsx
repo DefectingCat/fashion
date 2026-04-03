@@ -117,10 +117,10 @@ export function PasteImageUpload({
     if (!container) return
 
     // 监听整个容器树中的 paste 事件
-    container.addEventListener('paste', handlePaste as EventListener)
+    container.addEventListener('paste', handlePaste as unknown as EventListener)
 
     return () => {
-      container.removeEventListener('paste', handlePaste as EventListener)
+      container.removeEventListener('paste', handlePaste as unknown as EventListener)
     }
   }, [token, onUploadStart, onUploadEnd, onError])
 
