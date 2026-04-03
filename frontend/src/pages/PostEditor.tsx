@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import type { Post } from '../../../src/types'
+import type { Post, Tag } from '../../../src/types'
 import MDEditor from '@uiw/react-md-editor'
 import { PasteImageUpload } from '../components/PasteImageUpload'
+import TagSelector from '../components/TagSelector'
 
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>()
@@ -19,6 +20,7 @@ export default function PostEditor() {
     cover_image: '',
     published: true,
   })
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(isEdit)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +36,7 @@ export default function PostEditor() {
   const fetchPost = async () => {
     try {
       const res = await fetch('/api/posts')
-      const posts: Post[] = await res.json()
+      const posts: (Post & { tags?: Tag[] })[] = await res.json()
       const post = posts.find((p) => p.id === Number(id))
       if (post) {
         setForm({
@@ -45,6 +47,9 @@ export default function PostEditor() {
           cover_image: post.cover_image || '',
           published: post.published === 1,
         })
+        if (post.tags) {
+          setSelectedTagIds(post.tags.map((t) => t.id))
+        }
       } else {
         navigate('/admin')
       }
@@ -112,6 +117,7 @@ export default function PostEditor() {
         body: JSON.stringify({
           ...form,
           published: form.published,
+          tagIds: selectedTagIds,
         }),
       })
 
@@ -232,6 +238,15 @@ export default function PostEditor() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
               placeholder="文章简短描述"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">标签</label>
+            <TagSelector
+              selectedTagIds={selectedTagIds}
+              onChange={setSelectedTagIds}
+              disabled={loading}
             />
           </div>
 
