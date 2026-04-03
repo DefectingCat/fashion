@@ -25,8 +25,8 @@ async function start() {
       }
       return new Response("Not found", { status: 404 });
     })
-    .get("/frontend/*", async ({ params }) => {
-      const file = Bun.file(`./frontend/${params["*"]}`);
+    .get("/assets/*", async ({ params }) => {
+      const file = Bun.file(`./dist/client/assets/${params["*"]}`);
       if (await file.exists()) {
         return new Response(file);
       }
