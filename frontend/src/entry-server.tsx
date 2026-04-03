@@ -1,7 +1,7 @@
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import App from './App'
-import { setSSRData, type SSRData } from './ssrData'
+import { type SSRData, setSSRData } from './ssrData'
 
 interface RenderResult {
   html: string

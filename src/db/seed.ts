@@ -5,8 +5,8 @@
  * @created 2024-01-01
  */
 
-import db from './index'
 import bcrypt from 'bcrypt'
+import db from './index'
 
 /**
  * 播种数据库初始数据

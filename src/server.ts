@@ -6,15 +6,15 @@
  */
 
 import { Elysia } from 'elysia'
-import { renderSSR } from './ssr/renderer.tsx'
 import db from './db'
-import { postsRoutes } from './routes/posts'
+import { seedDatabase } from './db/seed'
 import { authRoutes } from './routes/auth'
 import { commentsRoutes } from './routes/comments'
+import { postsRoutes } from './routes/posts'
+import { statsRoutes } from './routes/stats'
 import { tagsRoutes } from './routes/tags'
 import { uploadRoutes } from './routes/upload'
-import { statsRoutes } from './routes/stats'
-import { seedDatabase } from './db/seed'
+import { renderSSR } from './ssr/renderer.tsx'
 
 /**
  * 启动博客服务器

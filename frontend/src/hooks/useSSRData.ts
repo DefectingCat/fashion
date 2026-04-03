@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getSSRData } from '../ssrData'
 
 export function useSSRData<T>(
